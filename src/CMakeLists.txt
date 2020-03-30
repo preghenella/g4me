@@ -11,6 +11,8 @@ set(SOURCES
   SteppingAction.cc
   EventAction.cc
   RunAction.cc
+  ExternalDecayerPhysics.cc
+  ExternalDecayer.cc
   RootIO.cc
   )
 
@@ -24,6 +26,8 @@ set(HEADERS
   SteppingAction.hh
   EventAction.hh
   RunAction.hh
+  ExternalDecayerPhysics.hh
+  ExternalDecayer.hh
   RootIO.hh
   )
 

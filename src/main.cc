@@ -6,6 +6,7 @@
 #include "G4UIExecutive.hh"
 #include "G4UImanager.hh"
 #include "FTFP_BERT.hh"
+#include "ExternalDecayerPhysics.hh"
 #include "PrimaryGeneratorAction.hh"
 #include "DetectorConstruction.hh"
 #include "G4VisManager.hh"
@@ -26,6 +27,7 @@ main(int argc, char **argv)
   
   auto run = new G4RunManager;
   auto physics = new FTFP_BERT;
+  physics->RegisterPhysics(new ExternalDecayerPhysics());
   auto detector = new DetectorConstruction();
   run->SetUserInitialization(detector);
   run->SetUserInitialization(physics);
