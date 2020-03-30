@@ -1,0 +1,25 @@
+### beam pipe
+/detector/pipe/radius 1.6 cm
+/detector/pipe/length 200. cm
+/detector/pipe/thickness 500 um
+
+### inner tracker           radius      length          thickness
+/detector/tracker/addLayer  1.8 cm	200. cm		50. um
+/detector/tracker/addLayer  2.8 cm	200. cm 	50. um
+/detector/tracker/addLayer  3.8 cm	200. cm 	50. um
+
+### outer tracker           radius      length          thickness
+/detector/tracker/addLayer   8. cm	200. cm		500. um
+/detector/tracker/addLayer  20. cm	200. cm 	500. um
+/detector/tracker/addLayer  25. cm	200. cm 	500. um
+/detector/tracker/addLayer  40. cm	200. cm 	500. um
+/detector/tracker/addLayer  55. cm	200. cm 	500. um
+/detector/tracker/addLayer  80. cm	200. cm    	500. um
+/detector/tracker/addLayer 100. cm	200. cm  	500. um
+
+### initialize
+/run/initialize
+
+### magnetic field
+/globalField/verbose 1
+/globalField/setValue 0 0 0.2 tesla
