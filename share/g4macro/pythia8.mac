@@ -1,0 +1,20 @@
+/control/verbose 0
+/control/saveHistory
+/run/verbose 0
+/run/printProgress 10
+/tracking/verbose 0
+/random/setSeeds 123456789 123456789
+
+/control/execute init.mac
+
+/generator/select pythia8
+
+/pythia8/config pythia8_hi.cfg
+/pythia8/cuts/eta -0.8 0.8
+/pythia8/init
+
+/stacking/transport gamma
+/stacking/transport unstable
+/io/prefix pythia8
+
+/run/beamOn 10
