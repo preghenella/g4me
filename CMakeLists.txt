@@ -7,7 +7,7 @@ set(CMAKE_DISABLE_IN_SOURCE_BUILD ON)
 project(g4me)
 cmake_minimum_required(VERSION 2.8 FATAL_ERROR)
 
-#cmake_policy(SET CMP0074 NEW)
+cmake_policy(SET CMP0074 NEW)
 cmake_policy(SET CMP0065 NEW)
 
 ### c++ standard
@@ -34,7 +34,9 @@ include(${ROOT_USE_FILE})
 find_package(Pythia REQUIRED)
 include_directories(${Pythia_INCLUDE_DIR})
 
-#find_package(HepMC REQUIRED)
+### find HepMC3 package
+find_package(HepMC3 REQUIRED)
+include_directories(${HepMC3_INCLUDE_DIR})
 #include(${HEPMC3_USE_FILE})
 
 include_directories(${CMAKE_CURRENT_SOURCE_DIR})

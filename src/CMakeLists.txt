@@ -7,6 +7,7 @@ set(SOURCES
   PrimaryGeneratorAction.cc
   Pythia8.cc
   GeneratorPythia8.cc
+  GeneratorHepMC.cc
   StackingAction.cc
   SteppingAction.cc
   EventAction.cc
@@ -23,6 +24,7 @@ set(HEADERS
   PrimaryGeneratorAction.hh
   Pythia8.hh
   GeneratorPythia8.hh
+  GeneratorHepMC.hh
   StackingAction.hh
   SteppingAction.hh
   EventAction.hh
@@ -34,5 +36,5 @@ set(HEADERS
   )
 
 add_executable(${PROJECT_NAME} main.cc ${SOURCES})
-target_link_libraries(${PROJECT_NAME} ${ROOT_LIBRARIES} ${Geant4_LIBRARIES} ${Pythia_LIBRARIES})
+target_link_libraries(${PROJECT_NAME} ${ROOT_LIBRARIES} ${Geant4_LIBRARIES} ${Pythia_LIBRARIES} ${HepMC3_LIBRARIES})
 install(TARGETS ${PROJECT_NAME} RUNTIME DESTINATION bin)

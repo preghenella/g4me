@@ -1,0 +1,18 @@
+/control/verbose 0
+/control/saveHistory
+/run/verbose 0
+/run/printProgress 10
+/tracking/verbose 0
+
+/control/execute init.mac
+
+/generator/select hepmc
+
+/hepmc/filename pythia.hepmc
+/hepmc/cuts/eta -0.8 0.8
+
+/stacking/transport all
+
+/io/prefix hepmc
+
+/run/beamOn 2
