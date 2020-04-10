@@ -4,6 +4,7 @@
 #include "GeneratorPythia8.hh"
 #include "G4UIdirectory.hh"
 #include "G4UIcmdWithAString.hh"
+#include "G4UIcmdWithABool.hh"
 #include "G4UIcmdWithoutParameter.hh"
 #include "G4UIcommand.hh"
 #include "G4SystemOfUnits.hh"
@@ -35,6 +36,11 @@ GeneratorPythia8::GeneratorPythia8()
   mPythia8CutsEta->SetParameter(new G4UIparameter("max", 'd', false));
   mPythia8CutsEta->AvailableForStates(G4State_PreInit, G4State_Idle);
 
+  mPythia8CutsStatus = new G4UIcmdWithABool("/pythia8/cuts/status", this);
+  mPythia8CutsStatus->SetGuidance("Particle status cut");
+  mPythia8CutsStatus->SetParameter("status", true);
+  mPythia8CutsStatus->SetDefaultValue(true);
+  mPythia8CutsStatus->AvailableForStates(G4State_PreInit, G4State_Idle);
   
 }
 
@@ -73,10 +79,12 @@ GeneratorPythia8::GeneratePrimaryVertex(G4Event *event)
   auto nParticles = mPythia.event.size();
   for (int iparticle = 0; iparticle < nParticles; iparticle++) { // first particle is system
     auto aParticle = mPythia.event[iparticle];
+
+    auto st = aParticle.statusHepMC();
+    auto eta = aParticle.eta();
     
-    if (aParticle.statusHepMC() != 1) continue;
-    if (aParticle.eta() < fCutsEtaMin ||
-	aParticle.eta() > fCutsEtaMax) continue;
+    if (mCutsStatus && st != 1) continue;
+    if (eta < fCutsEtaMin || eta > fCutsEtaMax) continue;
 
     auto pdg = aParticle.id();
     auto px = aParticle.px() * GeV;

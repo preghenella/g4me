@@ -11,6 +11,7 @@
 class G4UIdirectory;
 class G4UIcmdWithAString;
 class G4UIcmdWithoutParameter;
+class G4UIcmdWithABool;
 class G4UIcommand;
 
 class GeneratorPythia8 : public G4VPrimaryGenerator,
@@ -38,9 +39,11 @@ protected:
 
   G4UIdirectory *mPythia8CutsDirectory;
   G4UIcommand *mPythia8CutsEta;
+  G4UIcmdWithABool *mPythia8CutsStatus;
 
   double fCutsEtaMin = -DBL_MAX;
   double fCutsEtaMax = DBL_MAX;
+  double fCutsStatus = true;
   
 };
 
