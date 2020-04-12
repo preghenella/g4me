@@ -47,9 +47,7 @@ StackingAction::ClassifyNewTrack(const G4Track *aTrack)
 {
 
   bool doTransport = false;
-  
-  // skip ionisation electrons
-  
+
   // add track
   RootIO::Instance()->AddTrack(aTrack);
 

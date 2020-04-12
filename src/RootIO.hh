@@ -86,7 +86,8 @@ public:
 
   struct Tracks_t {
     int    n;
-    int    id[kMaxTracks];
+    char   proc[kMaxTracks]; // creator process type 
+    char   sproc[kMaxTracks]; // creator process subtype
     int    status[kMaxTracks];
     int    parent[kMaxTracks];
     int    pdg[kMaxTracks];

@@ -6,6 +6,7 @@
 #include "G4Track.hh"
 #include "G4VProcess.hh"
 #include "G4ProcessType.hh"
+#include "G4EmProcessSubType.hh"
 #include "G4TrackStatus.hh"
 #include "RootIO.hh"
 
@@ -24,8 +25,8 @@ SteppingAction::UserSteppingAction(const G4Step *aStep)
   else if (type == fElectromagnetic) {
     RootIO::Instance()->AddStatus(track, RootIO::kElectromagnetic);
     auto subtype = process->GetProcessSubType();
-    if (subtype == 13) RootIO::Instance()->AddStatus(track, RootIO::kCompton);
-    if (subtype == 14) RootIO::Instance()->AddStatus(track, RootIO::kConversion);
+    if (subtype == fComptonScattering) RootIO::Instance()->AddStatus(track, RootIO::kCompton);
+    if (subtype == fGammaConversion) RootIO::Instance()->AddStatus(track, RootIO::kConversion);
   } else if (type == fHadronic) {
     RootIO::Instance()->AddStatus(track, RootIO::kHadronic);
   } else if (type == fDecay) {

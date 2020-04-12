@@ -10,6 +10,8 @@
 #include "G4Track.hh"
 #include "G4Step.hh"
 #include "G4ParticleDefinition.hh"
+#include "G4VProcess.hh"
+#include "G4ProcessType.hh"
 #include "TFile.h"
 #include "TTree.h"
 
@@ -77,7 +79,8 @@ RootIO::Open(std::string filename) {
   
   mTreeTracks = new TTree("Tracks", "RootIO tree");
   mTreeTracks->Branch("n"      , &mTracks.n      , "n/I");
-  mTreeTracks->Branch("id"     , &mTracks.id     , "id[n]/I");
+  mTreeTracks->Branch("proc"   , &mTracks.proc   , "proc[n]/B");
+  mTreeTracks->Branch("sproc"  , &mTracks.sproc  , "sproc[n]/B");
   mTreeTracks->Branch("status" , &mTracks.status , "status[n]/I");
   mTreeTracks->Branch("parent" , &mTracks.parent , "parent[n]/I");
   mTreeTracks->Branch("pdg"    , &mTracks.pdg    , "pdg[n]/I");
@@ -119,8 +122,8 @@ RootIO::AddTrack(const G4Track *aTrack) {
   if (mTracks.n != id) {
     std::cout << "--- oh dear, this can lead to hard times later: " << mTracks.n << " " << aTrack->GetTrackID() << std::endl;
   }
-  mTracks.id[id]     = 
-  mTracks.status[id] = 0;
+  mTracks.proc[id]   = aTrack->GetCreatorProcess() ? aTrack->GetCreatorProcess()->GetProcessType() : -1;
+  mTracks.sproc[id]  = aTrack->GetCreatorProcess() ? aTrack->GetCreatorProcess()->GetProcessSubType() : -1;
   mTracks.parent[id] = aTrack->GetParentID() - 1;
   mTracks.pdg[id]    = aTrack->GetParticleDefinition()->GetPDGEncoding();
   mTracks.vt[id]     = aTrack->GetGlobalTime() / ns;
