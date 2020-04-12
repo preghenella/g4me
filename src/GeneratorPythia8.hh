@@ -6,7 +6,6 @@
 
 #include "G4VPrimaryGenerator.hh"
 #include "G4UImessenger.hh"
-#include "Pythia8/Pythia.h"
 
 class G4UIdirectory;
 class G4UIcmdWithAString;
@@ -27,14 +26,6 @@ public:
 protected:
 
   void SetNewValue(G4UIcommand *command, G4String value);
-
-  Pythia8::Pythia mPythia;
-  std::string mConfigFileName;
-  bool mInitialised = false;
-  
-  G4UIdirectory *mPythia8Directory;
-  G4UIcmdWithAString *mConfigFileNameCmd;
-  G4UIcmdWithoutParameter *mInitCmd;
 
   G4UIdirectory *mPythia8CutsDirectory;
   G4UIcommand *mPythia8CutsEta;

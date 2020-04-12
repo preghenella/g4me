@@ -5,6 +5,7 @@ set(SOURCES
   DetectorConstruction.cc
   SensitiveDetector.cc
   PrimaryGeneratorAction.cc
+  Pythia8.cc
   GeneratorPythia8.cc
   StackingAction.cc
   SteppingAction.cc
@@ -17,6 +18,7 @@ set(HEADERS
   DetectorConstruction.hh
   SensitiveDetector.hh
   PrimaryGeneratorAction.hh
+  Pythia8.hh
   GeneratorPythia8.hh
   StackingAction.hh
   SteppingAction.hh
