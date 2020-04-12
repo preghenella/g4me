@@ -81,14 +81,14 @@ RootIO::Open(std::string filename) {
   mTreeTracks->Branch("status" , &mTracks.status , "status[n]/I");
   mTreeTracks->Branch("parent" , &mTracks.parent , "parent[n]/I");
   mTreeTracks->Branch("pdg"    , &mTracks.pdg    , "pdg[n]/I");
-  mTreeTracks->Branch("vt"     , &mTracks.vt     , "vt[n]/F");
-  mTreeTracks->Branch("vx"     , &mTracks.vx     , "vx[n]/F");
-  mTreeTracks->Branch("vy"     , &mTracks.vy     , "vy[n]/F");
-  mTreeTracks->Branch("vz"     , &mTracks.vz     , "vz[n]/F");
-  mTreeTracks->Branch("e"      , &mTracks.e      , "e[n]/F");
-  mTreeTracks->Branch("px"     , &mTracks.px     , "px[n]/F");
-  mTreeTracks->Branch("py"     , &mTracks.py     , "py[n]/F");
-  mTreeTracks->Branch("pz"     , &mTracks.pz     , "pz[n]/F");
+  mTreeTracks->Branch("vt"     , &mTracks.vt     , "vt[n]/D");
+  mTreeTracks->Branch("vx"     , &mTracks.vx     , "vx[n]/D");
+  mTreeTracks->Branch("vy"     , &mTracks.vy     , "vy[n]/D");
+  mTreeTracks->Branch("vz"     , &mTracks.vz     , "vz[n]/D");
+  mTreeTracks->Branch("e"      , &mTracks.e      , "e[n]/D");
+  mTreeTracks->Branch("px"     , &mTracks.px     , "px[n]/D");
+  mTreeTracks->Branch("py"     , &mTracks.py     , "py[n]/D");
+  mTreeTracks->Branch("pz"     , &mTracks.pz     , "pz[n]/D");
   
 };
   

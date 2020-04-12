@@ -90,14 +90,14 @@ public:
     int    status[kMaxTracks];
     int    parent[kMaxTracks];
     int    pdg[kMaxTracks];
-    float  vt[kMaxTracks];
-    float  vx[kMaxTracks];
-    float  vy[kMaxTracks];
-    float  vz[kMaxTracks];
-    float  e[kMaxTracks];
-    float  px[kMaxTracks];
-    float  py[kMaxTracks];
-    float  pz[kMaxTracks];
+    double vt[kMaxTracks];
+    double vx[kMaxTracks];
+    double vy[kMaxTracks];
+    double vz[kMaxTracks];
+    double  e[kMaxTracks];
+    double px[kMaxTracks];
+    double py[kMaxTracks];
+    double pz[kMaxTracks];
   } mTracks; //!
   
 };
