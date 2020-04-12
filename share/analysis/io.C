@@ -16,7 +16,7 @@ struct IO_t {
   
   static const int kMaxTracks = 1048576;
 
-    enum ETrackStatus_t {
+  enum ETrackStatus_t {
     kTransport = 1 << 0,
     kElectromagnetic = 1 << 1,
     kHadronic = 1 << 2,
@@ -24,11 +24,53 @@ struct IO_t {
     kConversion = 1 << 4,
     kCompton = 1 << 5
   };
+
+  enum G4ProcessType {
+    fNotDefined,
+    fTransportation,
+    fElectromagnetic,
+    fOptical,             
+    fHadronic,
+    fPhotolepton_hadron,
+    fDecay,
+    fGeneral,
+    fParameterisation,
+    fUserDefined,
+    fParallel,
+    fPhonon,
+    fUCN
+  };
+
+  enum G4EmProcessSubType { 
+    fCoulombScattering = 1, 
+    fIonisation = 2, 
+    fBremsstrahlung = 3, 
+    fPairProdByCharged = 4,
+    fAnnihilation = 5, 
+    fAnnihilationToMuMu = 6,
+    fAnnihilationToHadrons = 7,
+    fNuclearStopping = 8,
+    fElectronGeneralProcess = 9,
+    
+    fMultipleScattering = 10, 
+    
+    fRayleigh = 11,
+    fPhotoElectricEffect = 12,
+    fComptonScattering = 13,
+    fGammaConversion = 14,
+    fGammaConversionToMuMu = 15,
+    fGammaGeneralProcess = 16,
+    
+    fCerenkov = 21,
+    fScintillation = 22,
+    fSynchrotronRadiation = 23,
+    fTransitionRadiation = 24  
+  };
   
   struct Tracks_t {
     int    n;
     char   proc[kMaxTracks];
-    char   procs[kMaxTracks];
+    char   sproc[kMaxTracks];
     int    status[kMaxTracks];
     int    parent[kMaxTracks];
     int    pdg[kMaxTracks];
@@ -63,7 +105,8 @@ struct IO_t {
     
     tree_tracks = (TTree *)fin->Get("Tracks");
     tree_tracks->SetBranchAddress("n"      , &tracks.n);
-    tree_tracks->SetBranchAddress("id"     , &tracks.id);
+    tree_tracks->SetBranchAddress("proc"   , &tracks.proc);
+    tree_tracks->SetBranchAddress("sproc"  , &tracks.sproc);
     tree_tracks->SetBranchAddress("status" , &tracks.status);
     tree_tracks->SetBranchAddress("parent" , &tracks.parent);
     tree_tracks->SetBranchAddress("pdg"    , &tracks.pdg);
