@@ -8,6 +8,7 @@
 #include "G4Box.hh"
 #include "G4Tubs.hh"
 #include "G4LogicalVolume.hh"
+#include "G4LogicalVolumeStore.hh"
 #include "G4PVPlacement.hh"
 #include "G4GlobalMagFieldMessenger.hh"
 #include "G4AutoDelete.hh"
@@ -242,10 +243,12 @@ DetectorConstruction::Construct() {
 void
 DetectorConstruction::ConstructSDandField()
 {
-  auto tracker_sd = new SensitiveDetector("tracker_sd");
-  G4SDManager::GetSDMpointer()->AddNewDetector(tracker_sd);
-  SetSensitiveDetector("layer_lv", tracker_sd, true);
-
+  if (G4LogicalVolumeStore::GetInstance()->GetVolume("layer_lv")) {
+    auto tracker_sd = new SensitiveDetector("tracker_sd");
+    G4SDManager::GetSDMpointer()->AddNewDetector(tracker_sd);
+    SetSensitiveDetector("layer_lv", tracker_sd, true);
+  }
+    
   G4ThreeVector fieldValue = G4ThreeVector();
   auto MagFieldMessenger = new G4GlobalMagFieldMessenger(fieldValue);
   MagFieldMessenger->SetVerboseLevel(1);
