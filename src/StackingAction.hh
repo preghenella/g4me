@@ -10,6 +10,8 @@
 class G4UIdirectory;
 class G4UIcmdWithAString;
 
+namespace G4me {
+
 class StackingAction : public G4UserStackingAction,
 		       public G4UImessenger
 {
@@ -35,4 +37,6 @@ protected:
   G4UIcmdWithAString *mStackingTransportCmd;
 };
 
+} /** namespace G4me **/
+  
 #endif /** _StackingAction_h_ **/

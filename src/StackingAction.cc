@@ -8,6 +8,8 @@
 #include "G4UIdirectory.hh"
 #include "G4UIcmdWithAString.hh"
 
+namespace G4me {
+
 /*****************************************************************/
 
 StackingAction::StackingAction()
@@ -83,3 +85,4 @@ StackingAction::ClassifyNewTrack(const G4Track *aTrack)
 
 /******************************************************************************/
 
+} /** namespace G4me **/

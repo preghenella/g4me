@@ -6,6 +6,8 @@
 
 #include "G4UserEventAction.hh"
 
+namespace G4me {
+
 class EventAction : public G4UserEventAction
 {
 
@@ -21,4 +23,6 @@ protected:
 
 };
 
+} /** namespace G4me **/
+  
 #endif /** _EventAction_h_ **/

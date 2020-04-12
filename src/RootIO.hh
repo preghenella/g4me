@@ -16,6 +16,8 @@ class G4Step;
 class TFile;
 class TTree;
 
+namespace G4me {
+
 class RootIO : public G4UImessenger
 {
   
@@ -103,4 +105,6 @@ public:
   
 };
 
+} /** namespace G4me **/
+  
 #endif /** _RootIO_h_ **/

@@ -15,7 +15,11 @@
 #include "TFile.h"
 #include "TTree.h"
 
+namespace G4me {
+
 RootIO *RootIO::mInstance = nullptr;
+
+/*****************************************************************/
 
 void
 RootIO::InitMessenger()
@@ -27,12 +31,16 @@ RootIO::InitMessenger()
   mFileNameCmd->AvailableForStates(G4State_PreInit, G4State_Idle);
 };
 
+/*****************************************************************/
+  
 void
 RootIO::SetNewValue(G4UIcommand *command, G4String value)
 {
   if (command == mFileNameCmd)
     mFilePrefix = value;
 }
+
+/*****************************************************************/
   
 void
 RootIO::BeginOfRunAction(const G4Run *aRun)
@@ -41,11 +49,15 @@ RootIO::BeginOfRunAction(const G4Run *aRun)
   Open(filename);
 }
 
+/*****************************************************************/
+
 void
 RootIO::EndOfRunAction(const G4Run *aRun)
 {
   Close();
 }
+
+/*****************************************************************/
 
 void
 RootIO::BeginOfEventAction(const G4Event *aEvent)
@@ -54,12 +66,16 @@ RootIO::BeginOfEventAction(const G4Event *aEvent)
   ResetTracks();
 }
 
+/*****************************************************************/
+
 void
 RootIO::EndOfEventAction(const G4Event *aEvent)
 {
   FillHits();
   FillTracks();
 }
+
+/*****************************************************************/
 
 void
 RootIO::Open(std::string filename) {
@@ -94,7 +110,9 @@ RootIO::Open(std::string filename) {
   mTreeTracks->Branch("pz"     , &mTracks.pz     , "pz[n]/D");
   
 };
-  
+
+/*****************************************************************/
+
 void
 RootIO::Close()
 {
@@ -104,17 +122,23 @@ RootIO::Close()
   mFile->Close();
 }
 
+/*****************************************************************/
+
 void
 RootIO::ResetTracks()
 {
   mTracks.n = 0;
 }
 
+/*****************************************************************/
+
 void
 RootIO::FillTracks()
 {
   mTreeTracks->Fill();
 }
+
+/*****************************************************************/
 
 void
 RootIO::AddTrack(const G4Track *aTrack) {
@@ -137,11 +161,15 @@ RootIO::AddTrack(const G4Track *aTrack) {
   mTracks.n++;
 }
 
+/*****************************************************************/
+
 void
 RootIO::AddStatus(const G4Track *aTrack, ETrackStatus_t status) {
   auto id = aTrack->GetTrackID() - 1;
   mTracks.status[id] |= status;
 }
+
+/*****************************************************************/
 
 void
 RootIO::ResetHits()
@@ -149,11 +177,15 @@ RootIO::ResetHits()
   mHits.n = 0;
 }
 
+/*****************************************************************/
+
 void
 RootIO::FillHits()
 {
   mTreeHits->Fill();
 }
+
+/*****************************************************************/
 
 void
 RootIO::AddHit(const G4Step *aStep)
@@ -171,3 +203,6 @@ RootIO::AddHit(const G4Step *aStep)
   mHits.n++;
 }
 
+/*****************************************************************/
+
+} /** namespace G4me **/

@@ -27,18 +27,18 @@ main(int argc, char **argv)
   
   auto run = new G4RunManager;
   auto physics = new FTFP_BERT;
-  physics->RegisterPhysics(new ExternalDecayerPhysics());
-  auto detector = new DetectorConstruction();
+  physics->RegisterPhysics(new G4me::ExternalDecayerPhysics());
+  auto detector = new G4me::DetectorConstruction();
   run->SetUserInitialization(detector);
   run->SetUserInitialization(physics);
   
   //  run->Initialize();
 
-  auto action_generator = new PrimaryGeneratorAction();
-  auto action_run = new RunAction();
-  auto action_event = new EventAction();
-  auto action_stacking = new StackingAction();
-  auto action_stepping = new SteppingAction();
+  auto action_generator = new G4me::PrimaryGeneratorAction();
+  auto action_run = new G4me::RunAction();
+  auto action_event = new G4me::EventAction();
+  auto action_stacking = new G4me::StackingAction();
+  auto action_stepping = new G4me::SteppingAction();
   
   run->SetUserAction(action_generator);
   run->SetUserAction(action_run);
@@ -47,7 +47,7 @@ main(int argc, char **argv)
   run->SetUserAction(action_stepping);
 
   // initialize RootIO messenger
-  RootIO::Instance()->InitMessenger();
+  G4me::RootIO::Instance()->InitMessenger();
 
   // start interative session
   if (argc == 1) {

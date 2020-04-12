@@ -8,6 +8,8 @@
 #include "GeneratorPythia8.hh"
 #include "G4Event.hh"
 
+namespace G4me {
+
 /*****************************************************************/
 
 PrimaryGeneratorAction::PrimaryGeneratorAction()
@@ -47,3 +49,7 @@ PrimaryGeneratorAction::GeneratePrimaries(G4Event *event)
 {
   mParticleSource->GeneratePrimaryVertex(event);
 }
+
+/*****************************************************************/
+
+} /** namespace G4me **/

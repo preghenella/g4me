@@ -17,6 +17,8 @@ class G4UIcommand;
 class G4UIdirectory;
 class G4UIcmdWithADoubleAndUnit;
 
+namespace G4me {
+
 class DetectorConstruction : public G4VUserDetectorConstruction,
 			     public G4UImessenger
 {
@@ -48,4 +50,6 @@ protected:
   std::vector<std::map<std::string, double>> mTrackerLayer;
 };
 
+} /** namespace G4me **/
+  
 #endif /** _DetectorConstruction_h_ **/

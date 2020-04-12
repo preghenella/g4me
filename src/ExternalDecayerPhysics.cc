@@ -7,6 +7,8 @@
 #include "G4ProcessManager.hh"
 #include "G4Decay.hh"
 
+namespace G4me {
+
 /*****************************************************************/
 
 void
@@ -43,3 +45,7 @@ ExternalDecayerPhysics::ConstructProcess()
 
   std::cout << " --- external decayer physics constructed" << std::endl;
 }
+
+/*****************************************************************/
+
+} /** namespace G4me **/

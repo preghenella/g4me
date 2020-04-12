@@ -9,6 +9,8 @@
 
 #include "RootIO.hh"
 
+namespace G4me {
+
 /*****************************************************************/
 
 G4bool
@@ -31,3 +33,5 @@ SensitiveDetector::ProcessHits(G4Step *aStep, G4TouchableHistory *ROhist)
 }
 
 /*****************************************************************/
+
+} /** namespace G4me **/

@@ -19,6 +19,8 @@
 #include "G4UIdirectory.hh"
 #include "G4UIcmdWithADoubleAndUnit.hh"
 
+namespace G4me {
+
 /*****************************************************************/
 
 DetectorConstruction::DetectorConstruction()
@@ -256,3 +258,7 @@ DetectorConstruction::ConstructSDandField()
   // Register the field messenger for deleting
   G4AutoDelete::Register(MagFieldMessenger);
 }
+
+/*****************************************************************/
+
+} /** namespace G4me **/

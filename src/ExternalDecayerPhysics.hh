@@ -7,6 +7,8 @@
 #include "G4VPhysicsConstructor.hh"
 #include "G4UImessenger.hh"
 
+namespace G4me {
+
 class ExternalDecayerPhysics : public G4VPhysicsConstructor,
 			       public G4UImessenger
 {
@@ -25,4 +27,6 @@ protected:
   
 };
 
+} /** namespace G4me **/
+  
 #endif /** _ExternalDecayerPhysics_h_ **/

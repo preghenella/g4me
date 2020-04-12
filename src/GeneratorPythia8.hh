@@ -12,6 +12,8 @@ class G4UIcmdWithAString;
 class G4UIcmdWithoutParameter;
 class G4UIcommand;
 
+namespace G4me {
+
 class GeneratorPythia8 : public G4VPrimaryGenerator,
 			 public G4UImessenger
 {
@@ -35,4 +37,6 @@ protected:
   
 };
 
+} /** namespace G4me **/
+  
 #endif /** _GeneratorPythia8_h_ **/

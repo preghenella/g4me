@@ -11,6 +11,8 @@
 
 #include "TVector3.h"
 
+namespace G4me {
+
 /*****************************************************************/
 
 GeneratorPythia8::GeneratorPythia8()
@@ -78,3 +80,7 @@ GeneratorPythia8::GeneratePrimaryVertex(G4Event *event)
   }
   
 }
+
+} /** namespace G4me **/
+  
+/*****************************************************************/

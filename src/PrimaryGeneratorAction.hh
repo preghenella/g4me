@@ -13,6 +13,8 @@ class G4VPrimaryGenerator;
 class G4UIdirectory;
 class G4UIcmdWithAString;
 
+namespace G4me {
+
 class PrimaryGeneratorAction : public G4VUserPrimaryGeneratorAction,
 			       public G4UImessenger
 {
@@ -35,4 +37,6 @@ protected:
   
 };
 
+} /** namespace G4me **/
+  
 #endif /** _PrimaryGeneratorAction_h_ **/

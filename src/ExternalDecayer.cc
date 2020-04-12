@@ -8,6 +8,8 @@
 #include "G4PhysicalConstants.hh"
 #include "G4ParticleTable.hh"
 
+namespace G4me {
+
 /*****************************************************************/
 
 void
@@ -67,3 +69,5 @@ ExternalDecayer::ImportDecayProducts(const G4Track &aTrack)
 }
 
 /*****************************************************************/
+
+} /** namespace G4me **/

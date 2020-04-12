@@ -6,6 +6,8 @@
 
 #include "G4VSensitiveDetector.hh"
 
+namespace G4me {
+
 class SensitiveDetector : public G4VSensitiveDetector {
   
 public:
@@ -19,4 +21,6 @@ protected:
   
 };
 
+} /** namespace G4me **/
+  
 #endif /** _SensitiveDetector_h_ **/

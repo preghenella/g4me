@@ -6,6 +6,8 @@
 
 #include "G4UserSteppingAction.hh"
 
+namespace G4me {
+
 class SteppingAction : public G4UserSteppingAction
 {
 
@@ -19,5 +21,7 @@ public:
 protected:
 
 };
+
+} /** namespace G4me **/
 
 #endif /** _SteppingAction_h_ **/

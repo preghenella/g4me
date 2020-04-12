@@ -9,6 +9,8 @@
 class TFile;
 class TTree;
 
+namespace G4me {
+
 class RunAction : public G4UserRunAction
 {
 
@@ -24,4 +26,6 @@ protected:
 
 };
 
+} /** namespace G4me **/
+  
 #endif /** _RunAction_h_ **/

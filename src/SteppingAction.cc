@@ -10,6 +10,8 @@
 #include "G4TrackStatus.hh"
 #include "RootIO.hh"
 
+namespace G4me {
+
 /******************************************************************************/
 
 void
@@ -37,3 +39,4 @@ SteppingAction::UserSteppingAction(const G4Step *aStep)
 
 /******************************************************************************/
 
+} /** namespace G4me **/

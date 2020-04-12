@@ -7,6 +7,8 @@
 #include "G4VExtDecayer.hh"
 #include "G4UImessenger.hh"
 
+namespace G4me {
+
 class ExternalDecayer : public G4VExtDecayer,
 			public G4UImessenger
 {
@@ -23,5 +25,7 @@ protected:
   void SetNewValue(G4UIcommand *command, G4String value);
   
 };
+
+} /** namespace G4me **/
 
 #endif /** _ExternalDecayer_h_ **/
