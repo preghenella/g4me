@@ -127,7 +127,7 @@ RootIO::AddTrack(const G4Track *aTrack) {
   mTracks.vx[id]     = aTrack->GetPosition().x()  / cm;
   mTracks.vy[id]     = aTrack->GetPosition().y()  / cm;
   mTracks.vz[id]     = aTrack->GetPosition().z()  / cm;
-  mTracks.e[id]      = aTrack->GetKineticEnergy() / GeV;
+  mTracks.e[id]      = aTrack->GetTotalEnergy()   / GeV;
   mTracks.px[id]     = aTrack->GetMomentum().x()  / GeV;
   mTracks.py[id]     = aTrack->GetMomentum().y()  / GeV;
   mTracks.pz[id]     = aTrack->GetMomentum().z()  / GeV;
