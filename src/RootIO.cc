@@ -148,6 +148,7 @@ RootIO::AddTrack(const G4Track *aTrack) {
   }
   mTracks.proc[id]   = aTrack->GetCreatorProcess() ? aTrack->GetCreatorProcess()->GetProcessType() : -1;
   mTracks.sproc[id]  = aTrack->GetCreatorProcess() ? aTrack->GetCreatorProcess()->GetProcessSubType() : -1;
+  mTracks.status[id] = 0;
   mTracks.parent[id] = aTrack->GetParentID() - 1;
   mTracks.pdg[id]    = aTrack->GetParticleDefinition()->GetPDGEncoding();
   mTracks.vt[id]     = aTrack->GetGlobalTime() / ns;
