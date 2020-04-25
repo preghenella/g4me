@@ -51,13 +51,32 @@ GeneratorPythia8::~GeneratorPythia8()
 void
 GeneratorPythia8::GeneratePrimaryVertex(G4Event *event)
 {
-
+  /** as we have inhibited all hadron decays
+      the event generation stops after hadronisation.
+      we can then pick all particles and force
+      their production vertex to be (0,0,0,)
+      before handing back to process the decays **/
+  
   auto pythia = G4me::Pythia8::Instance();
   pythia->next();
-  
+
+  // force production vertices to (0,0,0,0)
   auto nParticles = pythia->event.size();
   for (int iparticle = 0; iparticle < nParticles; iparticle++) { // first particle is system
-    auto aParticle = pythia->event[iparticle];
+    auto &aParticle = pythia->event[iparticle];
+    aParticle.xProd(0.);
+    aParticle.yProd(0.);
+    aParticle.zProd(0.);
+    aParticle.tProd(0.);
+  }
+  
+  // proceed with decays
+  pythia->moreDecays();
+
+  // add particles
+  nParticles = pythia->event.size();
+  for (int iparticle = 0; iparticle < nParticles; iparticle++) { // first particle is system
+    const auto &aParticle = pythia->event[iparticle];
     
     if (aParticle.statusHepMC() != 1) continue;
     if (aParticle.eta() < fCutsEtaMin ||

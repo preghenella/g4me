@@ -48,6 +48,7 @@ Pythia8::SetNewValue(G4UIcommand *command, G4String value)
     mPythia->readFile(value, true);
   }
   if (command == mInitCmd) {
+    mPythia->readString("HadronLevel:Decay off"); // inhibit hadron decays
     mPythia->init();
   }
 }
