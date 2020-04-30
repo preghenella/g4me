@@ -92,6 +92,10 @@ public:
     float  y[kMaxHits];
     float  z[kMaxHits];
     float  t[kMaxHits];
+    double  e[kMaxHits];
+    double px[kMaxHits];
+    double py[kMaxHits];
+    double pz[kMaxHits];
     int    lyrid[kMaxHits];
   } mHits; //!
 

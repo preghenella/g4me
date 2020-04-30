@@ -106,6 +106,10 @@ RootIO::Open(std::string filename) {
   mTreeHits->Branch("y"      , &mHits.y      , "y[n]/F");
   mTreeHits->Branch("z"      , &mHits.z      , "z[n]/F");
   mTreeHits->Branch("t"      , &mHits.t      , "t[n]/F");
+  mTreeHits->Branch("e"      , &mHits.e      , "e[n]/D");
+  mTreeHits->Branch("px"     , &mHits.px     , "px[n]/D");
+  mTreeHits->Branch("py"     , &mHits.py     , "py[n]/D");
+  mTreeHits->Branch("pz"     , &mHits.pz     , "pz[n]/D");
   mTreeHits->Branch("lyrid"  , &mHits.lyrid  , "lyrid[n]/I");
   
   mTreeTracks = new TTree("Tracks", "RootIO tree");
@@ -238,6 +242,10 @@ RootIO::AddHit(const G4Step *aStep)
   mHits.y[mHits.n]      = track->GetPosition().y() / cm;
   mHits.z[mHits.n]      = track->GetPosition().z() / cm;
   mHits.t[mHits.n]      = track->GetGlobalTime()   / ns;
+  mHits.e[mHits.n]      = track->GetTotalEnergy()   / GeV;
+  mHits.px[mHits.n]     = track->GetMomentum().x()  / GeV;
+  mHits.py[mHits.n]     = track->GetMomentum().y()  / GeV;
+  mHits.pz[mHits.n]     = track->GetMomentum().z()  / GeV;
   mHits.lyrid[mHits.n]  = point->GetTouchableHandle()->GetCopyNumber();
   mHits.n++;
 }
