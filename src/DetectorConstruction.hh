@@ -15,9 +15,14 @@ class G4OpticalSurface;
 
 class G4UIcommand;
 class G4UIdirectory;
+class G4UIcmdWithAString;
 class G4UIcmdWithADoubleAndUnit;
 
 namespace G4me {
+
+namespace TOFRICH {
+  class DetectorConstruction;
+}
 
 class DetectorConstruction : public G4VUserDetectorConstruction,
 			     public G4UImessenger
@@ -34,9 +39,12 @@ public:
 protected:
 
   void SetNewValue(G4UIcommand *command, G4String value);
-  
-  G4UIdirectory *mDetectorDirectory;
 
+  G4UIdirectory *mDetectorDirectory;
+  G4UIcmdWithAString *mDetectorEnableCmd;  
+
+  TOFRICH::DetectorConstruction *mTOFRICH;
+  
   G4UIdirectory *mPipeDirectory;
   G4UIcmdWithADoubleAndUnit *mPipeRadiusCmd;
   G4UIcmdWithADoubleAndUnit *mPipeThicknessCmd;
@@ -48,6 +56,7 @@ protected:
   G4UIdirectory *mTrackerDirectory;
   G4UIcommand *mTrackerAddLayerCmd;
   std::vector<std::map<std::string, double>> mTrackerLayer;
+
 };
 
 } /** namespace G4me **/

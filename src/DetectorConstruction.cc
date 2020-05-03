@@ -14,10 +14,16 @@
 #include "G4AutoDelete.hh"
 #include "G4SDManager.hh"
 #include "G4MaterialPropertiesTable.hh"
+#include "G4OpticalSurface.hh"
+#include "G4LogicalBorderSurface.hh"
+#include "G4LogicalSkinSurface.hh"
 #include "G4String.hh"
 
 #include "G4UIdirectory.hh"
+#include "G4UIcmdWithAString.hh"
 #include "G4UIcmdWithADoubleAndUnit.hh"
+
+#include "TOFRICH/DetectorConstruction.hh"
 
 namespace G4me {
 
@@ -25,6 +31,8 @@ namespace G4me {
 
 DetectorConstruction::DetectorConstruction()
   : mDetectorDirectory(nullptr)
+  , mDetectorEnableCmd(nullptr)
+  , mTOFRICH(nullptr)
   , mPipeDirectory(nullptr)
   , mPipeRadiusCmd(nullptr)
   , mPipeThicknessCmd(nullptr)
@@ -38,6 +46,12 @@ DetectorConstruction::DetectorConstruction()
 
   mDetectorDirectory = new G4UIdirectory("/detector/");
 
+  mDetectorEnableCmd = new G4UIcmdWithAString("/detector/enable", this);
+  mDetectorEnableCmd->SetGuidance("Enable detector module");
+  mDetectorEnableCmd->SetParameterName("select", false);
+  mDetectorEnableCmd->SetCandidates("TOFRICH");
+  mDetectorEnableCmd->AvailableForStates(G4State_PreInit);
+  
   /** beam pipe **/
   
   mPipeDirectory = new G4UIdirectory("/detector/pipe/");
@@ -86,7 +100,11 @@ DetectorConstruction::~DetectorConstruction()
 void
 DetectorConstruction::SetNewValue(G4UIcommand *command, G4String value)
 {
-
+  
+  if (command == mDetectorEnableCmd) {
+    if (value.compare("TOFRICH") == 0) mTOFRICH = new TOFRICH::DetectorConstruction();
+  }
+  
   if (command == mPipeRadiusCmd)
     mPipeRadius = mPipeRadiusCmd->GetNewDoubleValue(value);
   if (command == mPipeThicknessCmd)
@@ -188,31 +206,6 @@ DetectorConstruction::Construct() {
   G4cout << "     thickness = ";
   for (auto layer : mTrackerLayer) G4cout << layer["thickness"] / um << " ";
   G4cout << "um " << G4endl;
-
-#if 0
-  double radius[10] = {1.8, 2.8, 3.8, 8., 20., 25., 40., 55., 80., 100.};
-  double thickness[10] = {50., 50., 50., 500., 500., 500., 500., 500., 500., 500.};
-  for (int i = 0; i < 10; ++i) {
-
-    auto layer_s = new G4Tubs("layer_s",
-			      radius[i] * cm - 0.5 * thickness[i] * um,
-			      radius[i] * cm + 0.5 * thickness[i] * um,
-			      100. * cm,
-			      0., 2. * M_PI);
-
-    auto layer_lv = new G4LogicalVolume(layer_s, si, "layer_lv");
-    
-    auto layer_pv = new G4PVPlacement(nullptr,
-				      G4ThreeVector(0., 0., 0),
-				      layer_lv,
-				      "layer_pv",
-				      world_lv,
-				      false,
-				      i,
-				      false);
-    
-  }
-#endif
   
   int ilayer = 0;
   for (auto layer : mTrackerLayer) {
@@ -236,7 +229,11 @@ DetectorConstruction::Construct() {
 
     ++ilayer;
   }
-  
+
+
+  if (mTOFRICH)
+    mTOFRICH->Construct(world_lv);
+
   return world_pv;
 }
 
@@ -250,7 +247,11 @@ DetectorConstruction::ConstructSDandField()
     G4SDManager::GetSDMpointer()->AddNewDetector(tracker_sd);
     SetSensitiveDetector("layer_lv", tracker_sd, true);
   }
-    
+
+  if (mTOFRICH)
+    for (const auto &sd : mTOFRICH->GetSensitiveDetectors())
+      SetSensitiveDetector(sd.first, sd.second, false);
+  
   G4ThreeVector fieldValue = G4ThreeVector();
   auto MagFieldMessenger = new G4GlobalMagFieldMessenger(fieldValue);
   MagFieldMessenger->SetVerboseLevel(1);

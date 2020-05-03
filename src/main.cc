@@ -6,6 +6,7 @@
 #include "G4UIExecutive.hh"
 #include "G4UImanager.hh"
 #include "FTFP_BERT.hh"
+#include "G4OpticalPhysics.hh"
 #include "ExternalDecayerPhysics.hh"
 #include "PrimaryGeneratorAction.hh"
 #include "DetectorConstruction.hh"
@@ -27,6 +28,7 @@ main(int argc, char **argv)
   
   auto run = new G4RunManager;
   auto physics = new FTFP_BERT;
+  physics->RegisterPhysics(new G4OpticalPhysics());
   physics->RegisterPhysics(new G4me::ExternalDecayerPhysics());
   auto detector = new G4me::DetectorConstruction();
   run->SetUserInitialization(detector);
@@ -49,9 +51,15 @@ main(int argc, char **argv)
   // initialize RootIO messenger
   G4me::RootIO::Instance()->InitMessenger();
 
+  G4VisManager* visManager = new G4VisExecutive;
+  // G4VisExecutive can take a verbosity argument - see /vis/verbose guidance.
+  // G4VisManager* visManager = new G4VisExecutive("Quiet");
+  visManager->Initialize();
+
   // start interative session
   if (argc == 1) {
-    auto ui = new G4UIExecutive(argc, argv, "tcsh");
+    auto ui = new G4UIExecutive(argc, argv, "Qt");
+    //    auto ui = new G4UIExecutive(argc, argv, "tcsh");
     ui->SessionStart();
     delete ui;  
     return 0;
@@ -62,10 +70,5 @@ main(int argc, char **argv)
   std::string fileName = argv[1];
   uiManager->ApplyCommand(command + fileName);
   
-  //  G4VisManager* visManager = new G4VisExecutive;
-  // G4VisExecutive can take a verbosity argument - see /vis/verbose guidance.
-  // G4VisManager* visManager = new G4VisExecutive("Quiet");
-  //  visManager->Initialize();
-
   return 0;
 }

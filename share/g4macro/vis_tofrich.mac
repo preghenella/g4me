@@ -1,0 +1,19 @@
+/vis/open OGL
+/vis/drawVolume
+/vis/viewer/set/autoRefresh false
+/vis/viewer/set/style w
+
+/vis/geometry/set/visibility world_lv 0 0
+/vis/geometry/set/visibility vessel_lv 0 0
+/vis/geometry/set/visibility layer_lv 0 0
+
+/vis/geometry/set/colour aerogel_lv 0 0 0 1 0.25
+/vis/geometry/set/colour sensor_lv 0 0.5 0.12 0.12 1.0
+
+
+/vis/scene/add/trajectories smooth
+/vis/modeling/trajectories/create/drawByCharge
+/vis/scene/endOfEventAction accumulate 1
+
+/vis/viewer/set/autoRefresh true
+

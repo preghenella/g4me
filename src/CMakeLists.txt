@@ -2,6 +2,7 @@
 ### @email: preghenella@bo.infn.it
 
 set(SOURCES
+  TOFRICH/DetectorConstruction.cc
   DetectorConstruction.cc
   SensitiveDetector.cc
   PrimaryGeneratorAction.cc
@@ -19,6 +20,7 @@ set(SOURCES
   )
 
 set(HEADERS
+  TOFRICH/DetectorConstruction.hh
   DetectorConstruction.hh
   SensitiveDetector.hh
   PrimaryGeneratorAction.hh
@@ -34,6 +36,8 @@ set(HEADERS
   RootIO.hh
   PrimaryParticleInformation.hh
   )
+
+include_directories(${CMAKE_CURRENT_LIST_DIR})
 
 add_executable(${PROJECT_NAME} main.cc ${SOURCES})
 target_link_libraries(${PROJECT_NAME} ${ROOT_LIBRARIES} ${Geant4_LIBRARIES} ${Pythia_LIBRARIES} ${HepMC3_LIBRARIES})

@@ -16,6 +16,10 @@ namespace G4me {
 G4bool
 SensitiveDetector::ProcessHits(G4Step *aStep, G4TouchableHistory *ROhist)
 {
+  
+  RootIO::Instance()->AddHit(aStep);
+  
+  return true;
 
   if (aStep->GetTotalEnergyDeposit() == 0.) return true;
   if (!aStep->IsFirstStepInVolume()) return true;

@@ -1,0 +1,59 @@
+/process/optical/verbose 0
+
+
+### beam pipe
+/detector/pipe/radius 1.6 cm
+/detector/pipe/length 200. cm
+/detector/pipe/thickness 500 um
+
+### inner tracker           radius      length          thickness
+/detector/tracker/addLayer  1.8 cm	1.8  cm		50. um
+/detector/tracker/addLayer  2.8 cm	2.8  cm 	50. um
+/detector/tracker/addLayer  3.8 cm	3.8  cm 	50. um
+
+### outer tracker           radius      length          thickness
+/detector/tracker/addLayer   8. cm	8.0  cm		500. um
+/detector/tracker/addLayer  20. cm	20.  cm 	500. um
+/detector/tracker/addLayer  25. cm	25.  cm 	500. um
+/detector/tracker/addLayer  40. cm	40.  cm 	500. um
+/detector/tracker/addLayer  55. cm	55.  cm 	500. um
+/detector/tracker/addLayer  80. cm	80.  cm    	500. um
+/detector/tracker/addLayer 100. cm	100. cm  	500. um
+
+### TOF-RICH
+/detector/enable TOFRICH
+/detector/TOFRICH/inner_radius		105. cm
+/detector/TOFRICH/inner_length 		105. cm
+/detector/TOFRICH/outer_radius 		130. cm
+/detector/TOFRICH/outer_length 		130. cm
+/detector/TOFRICH/aerogel_thickness 	5.0  cm
+/detector/TOFRICH/sensor_thickness	500. um
+/detector/TOFRICH/aerogel_rindex	1.02
+/detector/TOFRICH/vessel_rindex		1.00
+/detector/TOFRICH/aerogel_layers	5
+
+### initialize
+/run/initialize
+
+### magnetic field
+/globalField/verbose 1
+/globalField/setValue 0 0 0.2 tesla
+
+### generator
+#/generator/select pythia8
+#/pythia8/config pythia8_hi.cfg
+#/pythia8/cuts/eta -0.8 0.8
+#/pythia8/init
+
+### generator
+/generator/select gun
+/gun/particle mu-
+/gun/position 0 0 0 cm
+/gun/direction 1 0 0
+/gun/momentumAmp 10000
+
+/stacking/transport all
+
+
+/tracking/verbose 0
+/run/beamOn 100

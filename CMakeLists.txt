@@ -39,7 +39,7 @@ find_package(HepMC3 REQUIRED)
 include_directories(${HepMC3_INCLUDE_DIR})
 #include(${HEPMC3_USE_FILE})
 
-include_directories(${CMAKE_CURRENT_SOURCE_DIR})
+#include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 
 ### add subdirectories
 add_subdirectory(src)

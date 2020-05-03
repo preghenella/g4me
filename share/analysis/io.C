@@ -11,6 +11,10 @@ struct IO_t {
     float  y[kMaxHits];
     float  z[kMaxHits];
     float  t[kMaxHits];
+    double  e[kMaxHits];
+    double px[kMaxHits];
+    double py[kMaxHits];
+    double pz[kMaxHits];
     int    lyrid[kMaxHits];
   } hits;
   
@@ -115,6 +119,10 @@ struct IO_t {
     tree_hits->SetBranchAddress("y"      , &hits.y);
     tree_hits->SetBranchAddress("z"      , &hits.z);
     tree_hits->SetBranchAddress("t"      , &hits.t);
+    tree_hits->SetBranchAddress("e"      , &hits.e);
+    tree_hits->SetBranchAddress("px"     , &hits.px);
+    tree_hits->SetBranchAddress("py"     , &hits.py);
+    tree_hits->SetBranchAddress("pz"     , &hits.pz);
     tree_hits->SetBranchAddress("lyrid"  , &hits.lyrid);
     auto tree_hits_nevents = tree_hits->GetEntries();
     
