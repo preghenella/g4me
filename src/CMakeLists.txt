@@ -14,6 +14,7 @@ set(SOURCES
   ExternalDecayerPhysics.cc
   ExternalDecayer.cc
   RootIO.cc
+  PrimaryParticleInformation.cc
   )
 
 set(HEADERS
@@ -29,6 +30,7 @@ set(HEADERS
   ExternalDecayerPhysics.hh
   ExternalDecayer.hh
   RootIO.hh
+  PrimaryParticleInformation.hh
   )
 
 add_executable(${PROJECT_NAME} main.cc ${SOURCES})

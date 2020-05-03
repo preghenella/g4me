@@ -73,6 +73,7 @@ struct IO_t {
     char   sproc[kMaxTracks];
     int    status[kMaxTracks];
     int    parent[kMaxTracks];
+    int    particle[kMaxTracks];
     int    pdg[kMaxTracks];
     double vt[kMaxTracks];
     double vx[kMaxTracks];
@@ -84,7 +85,21 @@ struct IO_t {
     double pz[kMaxTracks];
   } tracks;
   
-  TTree *tree_hits, *tree_tracks;
+  struct Particles_t {
+    int    n;
+    int    parent[kMaxTracks];
+    int    pdg[kMaxTracks];
+    double vt[kMaxTracks];
+    double vx[kMaxTracks];
+    double vy[kMaxTracks];
+    double vz[kMaxTracks];
+    double  e[kMaxTracks];
+    double px[kMaxTracks];
+    double py[kMaxTracks];
+    double pz[kMaxTracks];
+  } particles;
+  
+  TTree *tree_hits, *tree_tracks, *tree_particles;
     
   bool
   open(std::string filename) {
@@ -109,6 +124,7 @@ struct IO_t {
     tree_tracks->SetBranchAddress("sproc"  , &tracks.sproc);
     tree_tracks->SetBranchAddress("status" , &tracks.status);
     tree_tracks->SetBranchAddress("parent" , &tracks.parent);
+    tree_tracks->SetBranchAddress("particle" , &tracks.particle);
     tree_tracks->SetBranchAddress("pdg"    , &tracks.pdg);
     tree_tracks->SetBranchAddress("vt"     , &tracks.vt);
     tree_tracks->SetBranchAddress("vx"     , &tracks.vx);
@@ -120,10 +136,25 @@ struct IO_t {
     tree_tracks->SetBranchAddress("pz"     , &tracks.pz);
     auto tree_tracks_nevents = tree_tracks->GetEntries();
     
-    if (tree_hits_nevents != tree_tracks_nevents) {
+    tree_particles = (TTree *)fin->Get("Particles");
+    tree_particles->SetBranchAddress("n"      , &particles.n);
+    tree_particles->SetBranchAddress("parent" , &particles.parent);
+    tree_particles->SetBranchAddress("pdg"    , &particles.pdg);
+    tree_particles->SetBranchAddress("vt"     , &particles.vt);
+    tree_particles->SetBranchAddress("vx"     , &particles.vx);
+    tree_particles->SetBranchAddress("vy"     , &particles.vy);
+    tree_particles->SetBranchAddress("vz"     , &particles.vz);
+    tree_particles->SetBranchAddress("e"      , &particles.e);
+    tree_particles->SetBranchAddress("px"     , &particles.px);
+    tree_particles->SetBranchAddress("py"     , &particles.py);
+    tree_particles->SetBranchAddress("pz"     , &particles.pz);
+    auto tree_particles_nevents = tree_particles->GetEntries();
+    
+    if (tree_hits_nevents != tree_tracks_nevents || tree_hits_nevents != tree_particles_nevents) {
       std::cout << " io.open: entries mismatch in trees " << std::endl
-		<< "          " << tree_hits_nevents   << " events in \'Hits\' tree "   << std::endl
-		<< "          " << tree_tracks_nevents << " events in \'tracks\' tree " << std::endl;
+		<< "          " << tree_hits_nevents      << " events in \'Hits\' tree "      << std::endl
+		<< "          " << tree_tracks_nevents    << " events in \'Tracks\' tree "    << std::endl
+		<< "          " << tree_particles_nevents << " events in \'Particles\' tree " << std::endl;
 	return true;
     }
     std::cout << " io.open: successfully retrieved " << tree_tracks_nevents << " events " << std::endl;
@@ -131,6 +162,6 @@ struct IO_t {
   }
 
   auto nevents() { return tree_tracks->GetEntries(); }
-  void event(int iev) { tree_tracks->GetEntry(iev); tree_hits->GetEntry(iev); }
+  void event(int iev) { tree_tracks->GetEntry(iev); tree_hits->GetEntry(iev); tree_particles->GetEntry(iev); }
   
 } io;

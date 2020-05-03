@@ -8,8 +8,8 @@
 #include "G4SystemOfUnits.hh"
 #include "G4PhysicalConstants.hh"
 #include "G4Event.hh"
-
-#include "TVector3.h"
+#include "PrimaryParticleInformation.hh"
+#include "RootIO.hh"
 
 namespace G4me {
 
@@ -78,10 +78,6 @@ GeneratorPythia8::GeneratePrimaryVertex(G4Event *event)
   for (int iparticle = 0; iparticle < nParticles; iparticle++) { // first particle is system
     const auto &aParticle = pythia->event[iparticle];
     
-    if (aParticle.statusHepMC() != 1) continue;
-    if (aParticle.eta() < fCutsEtaMin ||
-	aParticle.eta() > fCutsEtaMax) continue;
-
     auto pdg = aParticle.id();
     auto px = aParticle.px() * GeV;
     auto py = aParticle.py() * GeV;
@@ -91,10 +87,23 @@ GeneratorPythia8::GeneratePrimaryVertex(G4Event *event)
     auto vy = aParticle.yProd() * mm;
     auto vz = aParticle.zProd() * mm;
     auto vt = aParticle.tProd() * mm / c_light;
+    auto parent = aParticle.mother1();
+    
+    // add particle
+    RootIO::Instance()->AddParticle(iparticle, pdg, parent, px, py, pz, et, vx, vy, vz, vt);
+    
+    if (aParticle.statusHepMC() != 1) continue;
+    if (aParticle.eta() < fCutsEtaMin ||
+	aParticle.eta() > fCutsEtaMax) continue;
 
     auto particle = new G4PrimaryParticle(pdg, px, py, pz, et);
+    auto info = new PrimaryParticleInformation();
+    info->SetIndex(iparticle);
+    particle->SetUserInformation(info);
+    
     auto vertex = new G4PrimaryVertex(vx, vy, vz, vt);      
     vertex->SetPrimary(particle);
+    
     event->AddPrimaryVertex(vertex);
   }
   

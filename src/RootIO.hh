@@ -56,7 +56,13 @@ public:
   void ResetHits();
   void FillHits();
   void AddHit(const G4Step *aStep);
-    
+
+  void ResetParticles();
+  void FillParticles();
+  void AddParticle(int id, int pdg, int parent,
+		   double px, double py, double pz, double et,
+		   double vx, double vy, double vz, double vt);
+  
   private:
 
   RootIO() = default;
@@ -66,6 +72,7 @@ public:
   TFile *mFile = nullptr;
   TTree *mTreeHits = nullptr;
   TTree *mTreeTracks = nullptr;
+  TTree *mTreeParticles = nullptr;
 
   G4UIdirectory *mDirectory;
   G4UIcmdWithAString *mFileNameCmd;
@@ -92,6 +99,7 @@ public:
     char   sproc[kMaxTracks]; // creator process subtype
     int    status[kMaxTracks];
     int    parent[kMaxTracks];
+    int    particle[kMaxTracks];
     int    pdg[kMaxTracks];
     double vt[kMaxTracks];
     double vx[kMaxTracks];
@@ -102,6 +110,22 @@ public:
     double py[kMaxTracks];
     double pz[kMaxTracks];
   } mTracks; //!
+  
+  static const int kMaxParticles = 1048576;
+
+  struct Particles_t {
+    int    n;
+    int    parent[kMaxParticles];
+    int    pdg[kMaxParticles];
+    double vt[kMaxParticles];
+    double vx[kMaxParticles];
+    double vy[kMaxParticles];
+    double vz[kMaxParticles];
+    double  e[kMaxParticles];
+    double px[kMaxParticles];
+    double py[kMaxParticles];
+    double pz[kMaxParticles];
+  } mParticles; //!
   
 };
 

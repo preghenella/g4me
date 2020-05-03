@@ -14,6 +14,7 @@
 #include "G4ProcessType.hh"
 #include "TFile.h"
 #include "TTree.h"
+#include "PrimaryParticleInformation.hh"
 
 namespace G4me {
 
@@ -47,6 +48,9 @@ RootIO::BeginOfRunAction(const G4Run *aRun)
 {
   std::string filename = Form("%s.%03d.root", mFilePrefix.c_str(), aRun->GetRunID());
   Open(filename);
+  ResetHits();
+  ResetTracks();
+  ResetParticles();
 }
 
 /*****************************************************************/
@@ -62,8 +66,6 @@ RootIO::EndOfRunAction(const G4Run *aRun)
 void
 RootIO::BeginOfEventAction(const G4Event *aEvent)
 {
-  ResetHits();
-  ResetTracks();
 }
 
 /*****************************************************************/
@@ -73,6 +75,10 @@ RootIO::EndOfEventAction(const G4Event *aEvent)
 {
   FillHits();
   FillTracks();
+  FillParticles();
+  ResetHits();
+  ResetTracks();
+  ResetParticles();
 }
 
 /*****************************************************************/
@@ -94,20 +100,34 @@ RootIO::Open(std::string filename) {
   mTreeHits->Branch("lyrid"  , &mHits.lyrid  , "lyrid[n]/I");
   
   mTreeTracks = new TTree("Tracks", "RootIO tree");
-  mTreeTracks->Branch("n"      , &mTracks.n      , "n/I");
-  mTreeTracks->Branch("proc"   , &mTracks.proc   , "proc[n]/B");
-  mTreeTracks->Branch("sproc"  , &mTracks.sproc  , "sproc[n]/B");
-  mTreeTracks->Branch("status" , &mTracks.status , "status[n]/I");
-  mTreeTracks->Branch("parent" , &mTracks.parent , "parent[n]/I");
-  mTreeTracks->Branch("pdg"    , &mTracks.pdg    , "pdg[n]/I");
-  mTreeTracks->Branch("vt"     , &mTracks.vt     , "vt[n]/D");
-  mTreeTracks->Branch("vx"     , &mTracks.vx     , "vx[n]/D");
-  mTreeTracks->Branch("vy"     , &mTracks.vy     , "vy[n]/D");
-  mTreeTracks->Branch("vz"     , &mTracks.vz     , "vz[n]/D");
-  mTreeTracks->Branch("e"      , &mTracks.e      , "e[n]/D");
-  mTreeTracks->Branch("px"     , &mTracks.px     , "px[n]/D");
-  mTreeTracks->Branch("py"     , &mTracks.py     , "py[n]/D");
-  mTreeTracks->Branch("pz"     , &mTracks.pz     , "pz[n]/D");
+  mTreeTracks->Branch("n"        , &mTracks.n        , "n/I");
+  mTreeTracks->Branch("proc"     , &mTracks.proc     , "proc[n]/B");
+  mTreeTracks->Branch("sproc"    , &mTracks.sproc    , "sproc[n]/B");
+  mTreeTracks->Branch("status"   , &mTracks.status   , "status[n]/I");
+  mTreeTracks->Branch("parent"   , &mTracks.parent   , "parent[n]/I");
+  mTreeTracks->Branch("particle" , &mTracks.particle , "particle[n]/I");
+  mTreeTracks->Branch("pdg"      , &mTracks.pdg      , "pdg[n]/I");
+  mTreeTracks->Branch("vt"       , &mTracks.vt       , "vt[n]/D");
+  mTreeTracks->Branch("vx"       , &mTracks.vx       , "vx[n]/D");
+  mTreeTracks->Branch("vy"       , &mTracks.vy       , "vy[n]/D");
+  mTreeTracks->Branch("vz"       , &mTracks.vz       , "vz[n]/D");
+  mTreeTracks->Branch("e"        , &mTracks.e        , "e[n]/D");
+  mTreeTracks->Branch("px"       , &mTracks.px       , "px[n]/D");
+  mTreeTracks->Branch("py"       , &mTracks.py       , "py[n]/D");
+  mTreeTracks->Branch("pz"       , &mTracks.pz       , "pz[n]/D");
+  
+  mTreeParticles = new TTree("Particles", "RootIO tree");
+  mTreeParticles->Branch("n"      , &mParticles.n      , "n/I");
+  mTreeParticles->Branch("parent" , &mParticles.parent , "parent[n]/I");
+  mTreeParticles->Branch("pdg"    , &mParticles.pdg    , "pdg[n]/I");
+  mTreeParticles->Branch("vt"     , &mParticles.vt     , "vt[n]/D");
+  mTreeParticles->Branch("vx"     , &mParticles.vx     , "vx[n]/D");
+  mTreeParticles->Branch("vy"     , &mParticles.vy     , "vy[n]/D");
+  mTreeParticles->Branch("vz"     , &mParticles.vz     , "vz[n]/D");
+  mTreeParticles->Branch("e"      , &mParticles.e      , "e[n]/D");
+  mTreeParticles->Branch("px"     , &mParticles.px     , "px[n]/D");
+  mTreeParticles->Branch("py"     , &mParticles.py     , "py[n]/D");
+  mTreeParticles->Branch("pz"     , &mParticles.pz     , "pz[n]/D");
   
 };
 
@@ -119,6 +139,7 @@ RootIO::Close()
   mFile->cd();
   mTreeHits->Write();
   mTreeTracks->Write();
+  mTreeParticles->Write();
   mFile->Close();
 }
 
@@ -146,19 +167,25 @@ RootIO::AddTrack(const G4Track *aTrack) {
   if (mTracks.n != id) {
     std::cout << "--- oh dear, this can lead to hard times later: " << mTracks.n << " " << aTrack->GetTrackID() << std::endl;
   }
-  mTracks.proc[id]   = aTrack->GetCreatorProcess() ? aTrack->GetCreatorProcess()->GetProcessType() : -1;
-  mTracks.sproc[id]  = aTrack->GetCreatorProcess() ? aTrack->GetCreatorProcess()->GetProcessSubType() : -1;
-  mTracks.status[id] = 0;
-  mTracks.parent[id] = aTrack->GetParentID() - 1;
-  mTracks.pdg[id]    = aTrack->GetParticleDefinition()->GetPDGEncoding();
-  mTracks.vt[id]     = aTrack->GetGlobalTime() / ns;
-  mTracks.vx[id]     = aTrack->GetPosition().x()  / cm;
-  mTracks.vy[id]     = aTrack->GetPosition().y()  / cm;
-  mTracks.vz[id]     = aTrack->GetPosition().z()  / cm;
-  mTracks.e[id]      = aTrack->GetTotalEnergy()   / GeV;
-  mTracks.px[id]     = aTrack->GetMomentum().x()  / GeV;
-  mTracks.py[id]     = aTrack->GetMomentum().y()  / GeV;
-  mTracks.pz[id]     = aTrack->GetMomentum().z()  / GeV;
+  int particleIndex = -1;
+  if (aTrack->GetDynamicParticle()->GetPrimaryParticle()) { // this is a primary particle or a preassigned decay product
+    auto info = dynamic_cast<PrimaryParticleInformation *>(aTrack->GetDynamicParticle()->GetPrimaryParticle()->GetUserInformation());
+    if (info) particleIndex = info->GetIndex();
+  }
+  mTracks.proc[id]     = aTrack->GetCreatorProcess() ? aTrack->GetCreatorProcess()->GetProcessType() : -1;
+  mTracks.sproc[id]    = aTrack->GetCreatorProcess() ? aTrack->GetCreatorProcess()->GetProcessSubType() : -1;
+  mTracks.status[id]   = 0;
+  mTracks.parent[id]   = aTrack->GetParentID() - 1;
+  mTracks.particle[id] = particleIndex;
+  mTracks.pdg[id]      = aTrack->GetParticleDefinition()->GetPDGEncoding();
+  mTracks.vt[id]       = aTrack->GetGlobalTime() / ns;
+  mTracks.vx[id]       = aTrack->GetPosition().x()  / cm;
+  mTracks.vy[id]       = aTrack->GetPosition().y()  / cm;
+  mTracks.vz[id]       = aTrack->GetPosition().z()  / cm;
+  mTracks.e[id]        = aTrack->GetTotalEnergy()   / GeV;
+  mTracks.px[id]       = aTrack->GetMomentum().x()  / GeV;
+  mTracks.py[id]       = aTrack->GetMomentum().y()  / GeV;
+  mTracks.pz[id]       = aTrack->GetMomentum().z()  / GeV;
   mTracks.n++;
 }
 
@@ -202,6 +229,45 @@ RootIO::AddHit(const G4Step *aStep)
   mHits.t[mHits.n]      = track->GetGlobalTime()   / ns;
   mHits.lyrid[mHits.n]  = point->GetTouchableHandle()->GetCopyNumber();
   mHits.n++;
+}
+
+/*****************************************************************/
+
+void
+RootIO::ResetParticles()
+{
+  mParticles.n = 0;
+}
+
+/*****************************************************************/
+
+void
+RootIO::FillParticles()
+{
+  mTreeParticles->Fill();
+}
+
+/*****************************************************************/
+
+void
+RootIO::AddParticle(int id, int pdg, int parent,
+		    double px, double py, double pz, double et,
+		    double vx, double vy, double vz, double vt)
+{
+  if (mParticles.n != id) {
+    std::cout << "--- oh dear, this can lead to hard times later: " << mParticles.n << " " << id << std::endl;
+  }
+  mParticles.parent[id] = parent;
+  mParticles.pdg[id]    = pdg;
+  mParticles.vt[id]     = vt;
+  mParticles.vx[id]     = vx;
+  mParticles.vy[id]     = vx;
+  mParticles.vz[id]     = vz;
+  mParticles.e[id]      = et;
+  mParticles.px[id]     = px;
+  mParticles.py[id]     = py;
+  mParticles.pz[id]     = pz;
+  mParticles.n++;
 }
 
 /*****************************************************************/
