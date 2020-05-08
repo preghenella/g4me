@@ -9,6 +9,7 @@
 class G4UIcommand;
 class G4UIdirectory;
 class G4UIcmdWithAString;
+class G4UIcmdWithABool;
 class G4Event;
 class G4Run;
 class G4Track;
@@ -76,7 +77,10 @@ public:
 
   G4UIdirectory *mDirectory;
   G4UIcmdWithAString *mFileNameCmd;
+  G4UIcmdWithABool *mSaveParticlesCmd;
 
+  bool mSaveParticles = true;
+  
   static const int kMaxHits = 1048576;
   
   struct Hits_t {
@@ -126,7 +130,7 @@ public:
     double py[kMaxParticles];
     double pz[kMaxParticles];
   } mParticles; //!
-  
+
 };
 
 } /** namespace G4me **/

@@ -5,6 +5,7 @@
 #include "G4SystemOfUnits.hh"
 #include "G4UIdirectory.hh"
 #include "G4UIcmdWithAString.hh"
+#include "G4UIcmdWithABool.hh"
 #include "G4Run.hh"
 #include "G4Event.hh"
 #include "G4Track.hh"
@@ -26,10 +27,16 @@ void
 RootIO::InitMessenger()
 {
   mDirectory = new G4UIdirectory("/io/");
+
   mFileNameCmd = new G4UIcmdWithAString("/io/prefix", this);
   mFileNameCmd->SetGuidance("Output file prefix.");
   mFileNameCmd->SetParameterName("prefix", false);
   mFileNameCmd->AvailableForStates(G4State_PreInit, G4State_Idle);
+
+  mSaveParticlesCmd = new G4UIcmdWithABool("/io/saveParticles", this);
+  mSaveParticlesCmd->SetGuidance("Save the generator particles.");
+  mSaveParticlesCmd->SetParameterName("prefix", false);
+  mSaveParticlesCmd->AvailableForStates(G4State_PreInit, G4State_Idle);
 };
 
 /*****************************************************************/
@@ -39,6 +46,8 @@ RootIO::SetNewValue(G4UIcommand *command, G4String value)
 {
   if (command == mFileNameCmd)
     mFilePrefix = value;
+  if (command == mSaveParticlesCmd)
+    mSaveParticles = mSaveParticlesCmd->GetNewBoolValue(value);
 }
 
 /*****************************************************************/
@@ -115,20 +124,22 @@ RootIO::Open(std::string filename) {
   mTreeTracks->Branch("px"       , &mTracks.px       , "px[n]/D");
   mTreeTracks->Branch("py"       , &mTracks.py       , "py[n]/D");
   mTreeTracks->Branch("pz"       , &mTracks.pz       , "pz[n]/D");
-  
-  mTreeParticles = new TTree("Particles", "RootIO tree");
-  mTreeParticles->Branch("n"      , &mParticles.n      , "n/I");
-  mTreeParticles->Branch("parent" , &mParticles.parent , "parent[n]/I");
-  mTreeParticles->Branch("pdg"    , &mParticles.pdg    , "pdg[n]/I");
-  mTreeParticles->Branch("vt"     , &mParticles.vt     , "vt[n]/D");
-  mTreeParticles->Branch("vx"     , &mParticles.vx     , "vx[n]/D");
-  mTreeParticles->Branch("vy"     , &mParticles.vy     , "vy[n]/D");
-  mTreeParticles->Branch("vz"     , &mParticles.vz     , "vz[n]/D");
-  mTreeParticles->Branch("e"      , &mParticles.e      , "e[n]/D");
-  mTreeParticles->Branch("px"     , &mParticles.px     , "px[n]/D");
-  mTreeParticles->Branch("py"     , &mParticles.py     , "py[n]/D");
-  mTreeParticles->Branch("pz"     , &mParticles.pz     , "pz[n]/D");
-  
+
+  if (mSaveParticles) {
+    mTreeParticles = new TTree("Particles", "RootIO tree");
+    mTreeParticles->Branch("n"      , &mParticles.n      , "n/I");
+    mTreeParticles->Branch("parent" , &mParticles.parent , "parent[n]/I");
+    mTreeParticles->Branch("pdg"    , &mParticles.pdg    , "pdg[n]/I");
+    mTreeParticles->Branch("vt"     , &mParticles.vt     , "vt[n]/D");
+    mTreeParticles->Branch("vx"     , &mParticles.vx     , "vx[n]/D");
+    mTreeParticles->Branch("vy"     , &mParticles.vy     , "vy[n]/D");
+    mTreeParticles->Branch("vz"     , &mParticles.vz     , "vz[n]/D");
+    mTreeParticles->Branch("e"      , &mParticles.e      , "e[n]/D");
+    mTreeParticles->Branch("px"     , &mParticles.px     , "px[n]/D");
+    mTreeParticles->Branch("py"     , &mParticles.py     , "py[n]/D");
+    mTreeParticles->Branch("pz"     , &mParticles.pz     , "pz[n]/D");
+  }
+    
 };
 
 /*****************************************************************/
@@ -139,7 +150,7 @@ RootIO::Close()
   mFile->cd();
   mTreeHits->Write();
   mTreeTracks->Write();
-  mTreeParticles->Write();
+  if (mSaveParticles) mTreeParticles->Write();
   mFile->Close();
 }
 
@@ -236,6 +247,7 @@ RootIO::AddHit(const G4Step *aStep)
 void
 RootIO::ResetParticles()
 {
+  if (!mSaveParticles) return;
   mParticles.n = 0;
 }
 
@@ -244,6 +256,7 @@ RootIO::ResetParticles()
 void
 RootIO::FillParticles()
 {
+  if (!mSaveParticles) return;
   mTreeParticles->Fill();
 }
 
@@ -254,6 +267,8 @@ RootIO::AddParticle(int id, int pdg, int parent,
 		    double px, double py, double pz, double et,
 		    double vx, double vy, double vz, double vt)
 {
+  if (!mSaveParticles) return;
+  
   if (mParticles.n != id) {
     std::cout << "--- oh dear, this can lead to hard times later: " << mParticles.n << " " << id << std::endl;
   }
