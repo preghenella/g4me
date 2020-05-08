@@ -2,23 +2,23 @@
 
 
 ### beam pipe
-/detector/pipe/radius 1.6 cm
-/detector/pipe/length 200. cm
-/detector/pipe/thickness 500 um
+#/detector/pipe/radius 1.6 cm
+#/detector/pipe/length 200. cm
+#/detector/pipe/thickness 500 um
 
 ### inner tracker           radius      length          thickness
-/detector/tracker/addLayer  1.8 cm	1.8  cm		50. um
-/detector/tracker/addLayer  2.8 cm	2.8  cm 	50. um
-/detector/tracker/addLayer  3.8 cm	3.8  cm 	50. um
+#/detector/tracker/addLayer  1.8 cm	1.8  cm		50. um
+#/detector/tracker/addLayer  2.8 cm	2.8  cm 	50. um
+#/detector/tracker/addLayer  3.8 cm	3.8  cm 	50. um
 
 ### outer tracker           radius      length          thickness
-/detector/tracker/addLayer   8. cm	8.0  cm		500. um
-/detector/tracker/addLayer  20. cm	20.  cm 	500. um
-/detector/tracker/addLayer  25. cm	25.  cm 	500. um
-/detector/tracker/addLayer  40. cm	40.  cm 	500. um
-/detector/tracker/addLayer  55. cm	55.  cm 	500. um
-/detector/tracker/addLayer  80. cm	80.  cm    	500. um
-/detector/tracker/addLayer 100. cm	100. cm  	500. um
+#/detector/tracker/addLayer   8. cm	8.0  cm		500. um
+#/detector/tracker/addLayer  20. cm	20.  cm 	500. um
+#/detector/tracker/addLayer  25. cm	25.  cm 	500. um
+#/detector/tracker/addLayer  40. cm	40.  cm 	500. um
+#/detector/tracker/addLayer  55. cm	55.  cm 	500. um
+#/detector/tracker/addLayer  80. cm	80.  cm    	500. um
+#/detector/tracker/addLayer 100. cm	100. cm  	500. um
 
 ### TOF-RICH
 /detector/enable TOFRICH
@@ -37,7 +37,7 @@
 
 ### magnetic field
 /globalField/verbose 1
-/globalField/setValue 0 0 0.2 tesla
+/globalField/setValue 0. 0. 0. tesla
 
 ### generator
 #/generator/select pythia8
@@ -45,15 +45,32 @@
 #/pythia8/cuts/eta -0.8 0.8
 #/pythia8/init
 
+/stacking/transport all
+/tracking/verbose 0
+
 ### generator
 /generator/select gun
 /gun/particle mu-
 /gun/position 0 0 0 cm
 /gun/direction 1 0 0
-/gun/momentumAmp 10000
+/gun/momentumAmp 100 GeV
+#/run/beamOn 100
 
-/stacking/transport all
-
-
-/tracking/verbose 0
+/gun/particle pi+
+/gun/position 0 0 0 cm
+/gun/direction 1 0 0
+/gun/momentumAmp 5 GeV
 /run/beamOn 100
+
+/gun/particle kaon+
+/gun/position 0 0 0 cm
+/gun/direction 1 0 0
+/gun/momentumAmp 5 GeV
+/run/beamOn 100
+
+/gun/particle proton
+/gun/position 0 0 0 cm
+/gun/direction 1 0 0
+/gun/momentumAmp 5 GeV
+/run/beamOn 100
+

@@ -289,8 +289,8 @@ DetectorConstruction::ConstructMaterialAerogel(std::string name, bool isConstN, 
   
   G4MaterialPropertiesTable *mpt = new G4MaterialPropertiesTable(); 
   mpt->AddProperty("RINDEX", energy, n, 10)->SetSpline(true);
-  mpt->AddProperty("ABSLENGTH", energy, abs, 10)->SetSpline(true);
-  mpt->AddProperty("RAYLEIGH", energy, ray, 10)->SetSpline(true);
+  //  mpt->AddProperty("ABSLENGTH", energy, abs, 10)->SetSpline(true);
+  //  mpt->AddProperty("RAYLEIGH", energy, ray, 10)->SetSpline(true);
   mat->SetMaterialPropertiesTable(mpt);
   
   return mat;
