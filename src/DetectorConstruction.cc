@@ -119,7 +119,7 @@ DetectorConstruction::Construct() {
   auto si = nist->FindOrBuildMaterial("G4_Si");
   
   /** world **/
-  auto world_s  = new G4Box("world_s", 1.5 * m, 1.5 * m, 1.5 * m);
+  auto world_s  = new G4Box("world_s", 1.5 * m, 1.5 * m, 3.0 * m);
   auto world_lv = new G4LogicalVolume(world_s, air, "world_lv");
   auto world_pv = new G4PVPlacement(0,                // no rotation
 				    G4ThreeVector(),  // at (0,0,0)
