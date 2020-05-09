@@ -26,6 +26,7 @@ public:
 protected:
 
   bool mTransportAll = false;
+  bool mTransportPrimary = false;
   bool mTransportGamma = false;
   bool mTransportUnstable = false;
   

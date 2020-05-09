@@ -19,7 +19,7 @@ StackingAction::StackingAction()
   mStackingTransportCmd = new G4UIcmdWithAString("/stacking/transport", this);
   mStackingTransportCmd->SetGuidance("Select particles to transport");
   mStackingTransportCmd->SetParameterName("transport", false);
-  mStackingTransportCmd->SetCandidates("none all gamma unstable");
+  mStackingTransportCmd->SetCandidates("none all primary gamma unstable");
   mStackingTransportCmd->AvailableForStates(G4State_PreInit, G4State_Idle);
 
 
@@ -33,10 +33,12 @@ StackingAction::SetNewValue(G4UIcommand *command, G4String value)
   if (command == mStackingTransportCmd) {
     if (value.compare("none") == 0) {
       mTransportAll = false;
+      mTransportPrimary = false;
       mTransportGamma = false;
       mTransportUnstable = false;
     }
     if (value.compare("all") == 0) mTransportAll = true;
+    if (value.compare("primary") == 0) mTransportPrimary = true;
     if (value.compare("gamma") == 0) mTransportGamma = true;
     if (value.compare("unstable") == 0) mTransportUnstable = true;
   }
@@ -55,6 +57,13 @@ StackingAction::ClassifyNewTrack(const G4Track *aTrack)
 
   // transport everything
   if (mTransportAll) {
+    RootIO::Instance()->AddStatus(aTrack, RootIO::kTransport);
+    return fUrgent;
+  }
+    
+  // transport primaries
+  if (mTransportPrimary &&
+      aTrack->GetParentID() == 0) {
     RootIO::Instance()->AddStatus(aTrack, RootIO::kTransport);
     return fUrgent;
   }
