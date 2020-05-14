@@ -105,6 +105,14 @@ DetectorConstruction::DetectorConstruction()
   mAerogelLayersCmd->SetParameterName("aerogel layers", false);
   mAerogelLayersCmd->AvailableForStates(G4State_PreInit);
 
+  mAerogelAddLayerCmd = new G4UIcommand("/detector/TOFRICH/addAerogelLayer", this);
+  mAerogelAddLayerCmd->SetGuidance("Add a layer of aerogel.");
+  mAerogelAddLayerCmd->SetParameter(new G4UIparameter("radius", 'd', false));
+  mAerogelAddLayerCmd->SetParameter(new G4UIparameter("unit", 's', false));
+  mAerogelAddLayerCmd->SetParameter(new G4UIparameter("thickness", 'd', false));
+  mAerogelAddLayerCmd->SetParameter(new G4UIparameter("unit", 's', false));
+  mAerogelAddLayerCmd->SetParameter(new G4UIparameter("rindex", 'd', false));
+  mAerogelAddLayerCmd->AvailableForStates(G4State_PreInit);
 }
 
 /*****************************************************************/
@@ -137,6 +145,19 @@ DetectorConstruction::SetNewValue(G4UIcommand *command, G4String value)
     mVesselRIndex = mVesselRIndexCmd->GetNewDoubleValue(value);
   if (command == mAerogelLayersCmd)
     mAerogelLayers = mAerogelLayersCmd->GetNewIntValue(value);
+
+  if (command == mAerogelAddLayerCmd) {
+    G4String radius_value, radius_unit, thickness_value, thickness_unit, rindex_value;
+    std::istringstream iss(value);
+    iss >> radius_value    >> radius_unit
+	>> thickness_value >> thickness_unit
+	>> rindex_value;
+    G4double radius = command->ConvertToDimensionedDouble(G4String(radius_value + ' ' + radius_unit));
+    G4double thickness = command->ConvertToDimensionedDouble(G4String(thickness_value + ' ' + thickness_unit));
+    G4double rindex = command->ConvertToDouble(rindex_value);
+    mAerogelLayer.push_back({ {"radius", radius}, {"thickness", thickness}, {"rindex", rindex} });
+  }
+
 }
   
 /*****************************************************************/
@@ -179,6 +200,65 @@ DetectorConstruction::Construct(G4LogicalVolume *world_lv)
   
   /** aerogel **/
 
+  G4cout << " --- constructing aerogel " << G4endl
+	 << "     nlayers   = " << mAerogelLayer.size() << G4endl;
+  G4cout << "     radius    = ";
+  for (auto layer : mAerogelLayer) G4cout << layer["radius"] / cm << " ";
+  G4cout << "cm " << G4endl;
+  G4cout << "     thickness = ";
+  for (auto layer : mAerogelLayer) G4cout << layer["thickness"] / cm << " ";
+  G4cout << "cm " << G4endl;
+  G4cout << "     rindex    = ";
+  for (auto layer : mAerogelLayer) G4cout << layer["rindex"];
+  G4cout << G4endl;
+  
+  int ilayer = 0;
+  for (auto layer : mAerogelLayer) {
+    
+    /** calculate refractive index for focusing features **/
+    auto thickness = layer["thickness"];
+    auto length = mInnerLength;
+    auto radius_in = layer["radius"];
+    auto radius_out = radius_in + thickness;
+    auto rindex = layer["rindex"];
+      
+    G4cout << " --- constructing TOF-RICH focusing aerogel layer " << ilayer << G4endl
+	   << "     aerogel radius_in  = " << radius_in  / cm << " cm " << G4endl
+	   << "     aerogel radius_out = " << radius_out / cm << " cm " << G4endl
+	   << "     aerogel length     = " << length     / cm << " cm " << G4endl
+	   << "     aerogel rindex     = " << rindex                    << G4endl;
+
+    auto aerogel_m = ConstructMaterialAerogel(std::string("aerogel_m_") + std::to_string(ilayer), true, rindex);
+    auto aerogel_os = ConstructOpticalSurfaceAerogel(std::string("aerogel_os_") + std::to_string(ilayer));
+    
+    auto aerogel_s = new G4Tubs(std::string("aerogel_s_") + std::to_string(ilayer),
+				radius_in,
+				radius_out,
+				length,
+				0., 2. * M_PI);
+    
+    auto aerogel_lv = new G4LogicalVolume(aerogel_s, aerogel_m, std::string("aerogel_lv_") + std::to_string(ilayer));
+    
+    auto aerogel_pv = new G4PVPlacement(nullptr,
+					G4ThreeVector(0., 0., 0),
+					aerogel_lv,
+					std::string("aerogel_pv_") + std::to_string(ilayer),
+					vessel_lv,
+					false,
+					0,
+					false);  
+    
+    // from aerogel to vessel
+    auto aerogel_ls = new G4LogicalBorderSurface(std::string("aerogel_ls_") + std::to_string(ilayer),
+						 vessel_pv,  // volume in
+						 aerogel_pv, // volume out
+						 aerogel_os);
+
+    ++ilayer;
+  }
+
+  
+#if 0
   auto gel_distance = mOuterRadius - mInnerRadius;
   auto gel_distance2 = gel_distance * gel_distance;
   for (int ilayer = 0; ilayer < mAerogelLayers; ++ilayer) {
@@ -225,6 +305,7 @@ DetectorConstruction::Construct(G4LogicalVolume *world_lv)
 						 aerogel_os);
 
   }
+#endif
   
   /** sensor **/
   

@@ -24,13 +24,20 @@
 /detector/enable TOFRICH
 /detector/TOFRICH/inner_radius		105. cm
 /detector/TOFRICH/inner_length 		105. cm
-/detector/TOFRICH/outer_radius 		130. cm
-/detector/TOFRICH/outer_length 		130. cm
+/detector/TOFRICH/outer_radius 		129. cm
+/detector/TOFRICH/outer_length 		129. cm
 /detector/TOFRICH/aerogel_thickness 	5.0  cm
 /detector/TOFRICH/sensor_thickness	500. um
 /detector/TOFRICH/aerogel_rindex	1.02
 /detector/TOFRICH/vessel_rindex		1.00
 /detector/TOFRICH/aerogel_layers	5
+
+### new stuff				radius		thickness	rindex
+/detector/TOFRICH/addAerogelLayer	105. cm		2. cm		1.01
+#/detector/TOFRICH/addAerogelLayer	107. cm		2. cm		1.0118
+/detector/TOFRICH/addAerogelLayer	107. cm		2. cm		1.0117
+/detector/TOFRICH/addAerogelLayer	109. cm		2. cm		1.0138
+/detector/TOFRICH/outer_radius 		131. cm
 
 ### initialize
 /run/initialize
@@ -59,18 +66,18 @@
 /gun/particle pi+
 /gun/position 0 0 0 cm
 /gun/direction 1 0 0
-/gun/momentumAmp 5 GeV
+/gun/momentumAmp 7 GeV
 /run/beamOn 100
 
 /gun/particle kaon+
 /gun/position 0 0 0 cm
 /gun/direction 1 0 0
-/gun/momentumAmp 5 GeV
+/gun/momentumAmp 7 GeV
 /run/beamOn 100
 
 /gun/particle proton
 /gun/position 0 0 0 cm
 /gun/direction 1 0 0
-/gun/momentumAmp 5 GeV
+/gun/momentumAmp 7 GeV
 /run/beamOn 100
 

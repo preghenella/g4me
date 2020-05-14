@@ -17,6 +17,7 @@ class G4UIdirectory;
 class G4UIcmdWithADoubleAndUnit;
 class G4UIcmdWithADouble;
 class G4UIcmdWithAnInteger;
+class G4UIcommand;
 
 namespace G4me {
 namespace TOFRICH {
@@ -68,7 +69,10 @@ protected:
   double mAerogelRIndex;
   double mVesselRIndex;
   int mAerogelLayers;
-  
+
+  G4UIcommand *mAerogelAddLayerCmd;
+  std::vector<std::map<std::string, double>> mAerogelLayer;
+
 };
 
 } /** namespace TOFRICH **/

@@ -3,7 +3,7 @@
 #include "style.C"
 
 TH1 *
-angle(const char *fname, double emission = 105., double refraction = 1.02)
+angle(const char *fname, double rindex = 1.01, double emission = 105., double refraction = 1.02)
 {
 
   style();
@@ -13,10 +13,10 @@ angle(const char *fname, double emission = 105., double refraction = 1.02)
 
   auto hMap = new TH2F("hMap", ";r#varphi (cm);z (cm)", 300, -15., 15., 300, -15., 15.);
   auto hAngle = new TH1F("hAngle", ";#theta_{Ch} (rad)", 10000, 0., 1.);
-  auto hTime = new TH1F("hTime", ";time (ns)", 10000, 0., 10.);
+  auto hTime = new TH1F("hTime", ";time (ns)", 200, 0., 10.);
   auto hBeta = new TH1F("hBeta", ";#beta = v/c", 1000, 0.95, 1.05);
 
-  auto h2 = new TH2F("h2", "", 10, 0., 10., 10, 0., 10.);
+  auto h2 = new TH2F("h2", "", 200, 0., 10., 1000, 0., 1.);
   
   TVector3 emiV(emission, 0., 0.);
   TVector3 hitV, cheV;
@@ -27,6 +27,9 @@ angle(const char *fname, double emission = 105., double refraction = 1.02)
     
     for (int ihit = 0; ihit < io.hits.n; ++ihit) {
 
+      // kill hits randomly
+      if (gRandom->Uniform() < 0.9) continue;
+      
       // get track id
       auto trkid = io.hits.trkid[ihit];
       
@@ -37,7 +40,7 @@ angle(const char *fname, double emission = 105., double refraction = 1.02)
       auto x = io.hits.x[ihit];
       auto y = io.hits.y[ihit];
       auto z = io.hits.z[ihit];
-      auto t = io.hits.t[ihit];
+      auto t = io.hits.t[ihit] + gRandom->Gaus(0., 0.050); // 50 ps smearing
       auto r = hypot(x, y);
       auto phi = atan2(y, x);
       auto rphi = r * phi;
@@ -51,7 +54,7 @@ angle(const char *fname, double emission = 105., double refraction = 1.02)
       hitV.SetXYZ(x, y, z);
       cheV = emiV - hitV;
       auto angle = cheV.Angle(emiV) * TMath::DegToRad();
-      auto beta = 1. / 1.02 / cos(angle);
+      auto beta = 1. / rindex / cos(angle);
 
       
       // hit position wrt. emission point
@@ -68,19 +71,22 @@ angle(const char *fname, double emission = 105., double refraction = 1.02)
       costheta = sqrt(1. - (1. - costheta * costheta) / (refraction * refraction));
       
       angle = acos(costheta);
-      beta = 1. / 1.02 / costheta;
+      beta = 1. / rindex / costheta;
       
       hAngle->Fill(angle);
       hTime->Fill(t);
       hBeta->Fill(beta);
-      
+
+      h2->Fill(t, angle);
     }
+
+    break;
   }
   
   auto c = new TCanvas("c", "c", 1800, 600);
   c->Divide(3, 1);
   c->cd(1);
-  hMap->Draw("colz");
+  hMap->Draw("box");
   c->cd(2);
   hAngle->Draw();
   c->cd(3);
@@ -91,8 +97,11 @@ angle(const char *fname, double emission = 105., double refraction = 1.02)
 
   hMap->SetStats(0);
   auto cring = new TCanvas("cring", "cring", 800, 800);
-  hMap->Draw("col");
+  hMap->Draw("box");
   cring->SaveAs("ring.png");
 
+  new TCanvas("c2");
+  h2->Draw("colz");
+  
   return hAngle;
 }
