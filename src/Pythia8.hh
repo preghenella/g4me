@@ -34,6 +34,7 @@ private:
   G4UIdirectory *mPythia8Directory;
   G4UIcmdWithAString *mConfigFileNameCmd;
   G4UIcmdWithoutParameter *mInitCmd;
+  G4UIcmdWithoutParameter *mStatCmd;
 };
 
 } /** namespace G4me **/

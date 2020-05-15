@@ -37,6 +37,10 @@ Pythia8::Pythia8()
   mInitCmd = new G4UIcmdWithoutParameter("/pythia8/init", this);
   mInitCmd->SetGuidance("Initialise");
   mInitCmd->AvailableForStates(G4State_PreInit, G4State_Idle);
+
+  mStatCmd = new G4UIcmdWithoutParameter("/pythia8/stat", this);
+  mStatCmd->SetGuidance("Statistics");
+  mStatCmd->AvailableForStates(G4State_PreInit, G4State_Idle);
 }
 
 /*****************************************************************/
@@ -50,6 +54,9 @@ Pythia8::SetNewValue(G4UIcommand *command, G4String value)
   if (command == mInitCmd) {
     mPythia->readString("HadronLevel:Decay off"); // inhibit hadron decays
     mPythia->init();
+  }
+  if (command == mStatCmd) {
+    mPythia->stat();
   }
 }
   
