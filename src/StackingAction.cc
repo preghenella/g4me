@@ -52,8 +52,9 @@ StackingAction::ClassifyNewTrack(const G4Track *aTrack)
 
   bool doTransport = false;
 
-  // add track
-  RootIO::Instance()->AddTrack(aTrack);
+  // add track (only in pre-track phase)
+  if (aTrack->GetCurrentStepNumber() == 0)
+    RootIO::Instance()->AddTrack(aTrack);
 
   // transport everything
   if (mTransportAll) {
