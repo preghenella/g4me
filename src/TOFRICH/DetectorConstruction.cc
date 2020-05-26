@@ -360,18 +360,18 @@ DetectorConstruction::ConstructMaterialAerogel(std::string name, bool isConstN, 
   double n[10] = { 1.028016033, 1.028055862, 1.0281084, 1.028179723, 1.028280043,
 		   1.028427656, 1.028658131, 1.029048716, 1.029796312, 1.03155063 };
 
-  G4double abs[10] = { 10. * cm, 10. * cm, 10. * cm, 10. * cm, 10. * cm,
-		       10. * cm, 10. * cm, 10. * cm, 10. * cm, 10. * cm };
+  G4double abs[10] = { 500. * cm, 500. * cm, 500. * cm, 500. * cm, 500. * cm,
+		       500. * cm, 500. * cm, 500. * cm, 500. * cm, 500. * cm };
   
-  G4double ray[10] = { 10. * cm, 10. * cm, 10. * cm, 10. * cm, 10. * cm,
-		       10. * cm, 10. * cm, 10. * cm, 10. * cm, 10. * cm };
+  G4double ray[10] = { 5.4 * cm, 5.4 * cm, 5.4 * cm, 5.4 * cm, 5.4 * cm,
+		       5.4 * cm, 5.4 * cm, 5.4 * cm, 5.4 * cm, 5.4 * cm };
   
   if (isConstN) for (int i = 0; i < 10; ++i) n[i] = constN;
   
   G4MaterialPropertiesTable *mpt = new G4MaterialPropertiesTable(); 
   mpt->AddProperty("RINDEX", energy, n, 10)->SetSpline(true);
-  //  mpt->AddProperty("ABSLENGTH", energy, abs, 10)->SetSpline(true);
-  //  mpt->AddProperty("RAYLEIGH", energy, ray, 10)->SetSpline(true);
+  mpt->AddProperty("ABSLENGTH", energy, abs, 10)->SetSpline(true);
+  mpt->AddProperty("RAYLEIGH", energy, ray, 10)->SetSpline(true);
   mat->SetMaterialPropertiesTable(mpt);
   
   return mat;
