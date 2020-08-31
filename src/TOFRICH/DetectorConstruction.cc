@@ -24,6 +24,8 @@
 #include "G4UIcmdWithADouble.hh"
 #include "G4UIcmdWithAnInteger.hh"
 
+#include "TGraph.h"
+
 namespace G4me {
 namespace TOFRICH {
   
@@ -360,18 +362,48 @@ DetectorConstruction::ConstructMaterialAerogel(std::string name, bool isConstN, 
   double n[10] = { 1.028016033, 1.028055862, 1.0281084, 1.028179723, 1.028280043,
 		   1.028427656, 1.028658131, 1.029048716, 1.029796312, 1.03155063 };
 
-  G4double abs[10] = { 500. * cm, 500. * cm, 500. * cm, 500. * cm, 500. * cm,
-		       500. * cm, 500. * cm, 500. * cm, 500. * cm, 500. * cm };
+  const double hc = 197.3269788 * 2. * M_PI; // [eV nm]
+
+  /** read absorption length from file **/
+  TGraph gAbsLength("aerogel_absorption_length.txt");
+  for (int i = 0; i < gAbsLength.GetN(); ++i) {
+    gAbsLength.GetX()[i] = hc / gAbsLength.GetX()[i] * eV; // nm -> eV
+    gAbsLength.GetY()[i] = gAbsLength.GetY()[i] * cm;
+  }
+  gAbsLength.Sort();
+
+  /** read rayleigh scattering length from file **/
+  TGraph gRayleigh("aerogel_scattering_length.txt");
+  for (int i = 0; i < gRayleigh.GetN(); ++i) {
+    gRayleigh.GetX()[i] = hc / gRayleigh.GetX()[i] * eV; // nm -> eV
+    gRayleigh.GetY()[i] = gRayleigh.GetY()[i] * cm;
+  }
+  gRayleigh.Sort();
+
+  gRayleigh.Print();
+
+  /** use rayleigh scattering length as from Tabata 
+      derived using Hunt formula with parameters (n = 1.03)
+      A = 1
+      C = 0.00435
+   **/
+  double abslength_energy[2] = { 1.23984 * eV, 8.26561 * eV };
+  double abslength_value[2] = { 1. * km, 1. * km };
   
-  G4double ray[10] = { 5.4 * cm, 5.4 * cm, 5.4 * cm, 5.4 * cm, 5.4 * cm,
-		       5.4 * cm, 5.4 * cm, 5.4 * cm, 5.4 * cm, 5.4 * cm };
+  double rayleigh_energy[18] = {1.23984 * eV, 1.3051 * eV, 1.3776 * eV, 1.45864 * eV, 1.5498 * eV, 1.65312 * eV, 1.7712 * eV, 1.90745 * eV, 2.0664 * eV, 2.25426 * eV, 2.47968 * eV, 2.7552 * eV, 3.0996 * eV, 3.54241 * eV, 4.13281 * eV, 4.95937 * eV, 6.19921 * eV, 8.26561 * eV};
+  double rayleigh_value[18] = {229.885 * cm, 187.243 * cm, 150.828 * cm, 120.001 * cm, 94.1609 * cm, 72.7371 * cm, 55.1954 * cm, 41.0359 * cm, 29.7931 * cm, 21.0359 * cm, 14.3678 * cm, 9.42672 * cm, 5.88506 * cm, 3.44971 * cm, 1.86207 * cm, 0.897989 * cm, 0.367816 * cm, 0.116379 * cm};
   
   if (isConstN) for (int i = 0; i < 10; ++i) n[i] = constN;
   
   G4MaterialPropertiesTable *mpt = new G4MaterialPropertiesTable(); 
   mpt->AddProperty("RINDEX", energy, n, 10)->SetSpline(true);
-  mpt->AddProperty("ABSLENGTH", energy, abs, 10)->SetSpline(true);
-  mpt->AddProperty("RAYLEIGH", energy, ray, 10)->SetSpline(true);
+  //  mpt->AddProperty("ABSLENGTH", gAbsLength.GetX(), gAbsLength.GetY(), gAbsLength.GetN())->SetSpline(true);
+  //  mpt->AddProperty("RAYLEIGH", gRayleigh.GetX(), gRayleigh.GetY(), gRayleigh.GetN())->SetSpline(true);
+
+  //  mpt->AddProperty("ABSLENGTH", abslength_energy, abslength_value, 2)->SetSpline(true);
+  mpt->AddProperty("RAYLEIGH", rayleigh_energy, rayleigh_value, 18)->SetSpline(true);
+  mpt->AddProperty("ABSLENGTH", rayleigh_energy, rayleigh_value, 18)->SetSpline(true); // use same formula as for Rayleigh, we anyway keep it off
+
   mat->SetMaterialPropertiesTable(mpt);
   
   return mat;
@@ -395,8 +427,8 @@ DetectorConstruction::ConstructMaterialVessel(bool isConstN, double constN)
   G4double n[10] = { 1.00081514, 1.000815863, 1.000816816, 1.000818108, 1.00081992,
 		     1.000822578, 1.000826707, 1.000833647, 1.000846733, 1.000876456 };
   
-  G4double abs[10] = { 10. * m, 10. * m, 10. * m, 10. * m, 10. * m,
-		       10. * m, 10. * m, 10. * m, 10. * m, 10. * m };
+  G4double abs[10] = { 10. * km, 10. * km, 10. * km, 10. * km, 10. * km,
+		       10. * km, 10. * km, 10. * km, 10. * km, 10. * km };
   
   if (isConstN) for (int i = 0; i < 10; ++i) n[i] = constN;
   

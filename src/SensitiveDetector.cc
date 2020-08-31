@@ -17,13 +17,13 @@ G4bool
 SensitiveDetector::ProcessHits(G4Step *aStep, G4TouchableHistory *ROhist)
 {
   
+  if (aStep->GetTotalEnergyDeposit() == 0.) return true;
+  if (!aStep->IsFirstStepInVolume()) return true;
+  
   RootIO::Instance()->AddHit(aStep);
   
   return true;
 
-  if (aStep->GetTotalEnergyDeposit() == 0.) return true;
-  if (!aStep->IsFirstStepInVolume()) return true;
-  
   auto track = aStep->GetTrack();
   auto particleDefinition = track->GetParticleDefinition();
   auto momentumDirection = track->GetMomentumDirection();

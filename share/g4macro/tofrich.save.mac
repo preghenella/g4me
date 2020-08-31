@@ -1,0 +1,128 @@
+/process/optical/verbose 0
+
+
+### beam pipe
+#/detector/pipe/radius 1.6 cm
+#/detector/pipe/length 200. cm
+#/detector/pipe/thickness 500 um
+
+### inner tracker           radius      length          thickness
+#/detector/tracker/addLayer  1.8 cm	1.8  cm		50. um
+#/detector/tracker/addLayer  2.8 cm	2.8  cm 	50. um
+#/detector/tracker/addLayer  3.8 cm	3.8  cm 	50. um
+
+### outer tracker           radius      length          thickness
+#/detector/tracker/addLayer   8. cm	8.0  cm		500. um
+#/detector/tracker/addLayer  20. cm	20.  cm 	500. um
+#/detector/tracker/addLayer  25. cm	25.  cm 	500. um
+#/detector/tracker/addLayer  40. cm	40.  cm 	500. um
+#/detector/tracker/addLayer  55. cm	55.  cm 	500. um
+#/detector/tracker/addLayer  80. cm	80.  cm    	500. um
+#/detector/tracker/addLayer 100. cm	100. cm  	500. um
+
+### TOF-RICH
+/detector/enable TOFRICH
+/detector/TOFRICH/inner_radius		105. cm
+/detector/TOFRICH/inner_length 		105. cm
+/detector/TOFRICH/outer_radius 		129. cm
+/detector/TOFRICH/outer_length 		129. cm
+/detector/TOFRICH/aerogel_thickness 	5.0  cm
+/detector/TOFRICH/sensor_thickness	500. um
+/detector/TOFRICH/aerogel_rindex	1.02
+/detector/TOFRICH/vessel_rindex		1.00
+/detector/TOFRICH/aerogel_layers	5
+
+### new stuff				radius		thickness	rindex
+#/detector/TOFRICH/addAerogelLayer	105. cm		1. cm		1.03
+#/detector/TOFRICH/outer_radius		126. cm
+/detector/TOFRICH/addAerogelLayer	105. cm		2. cm		1.03
+/detector/TOFRICH/outer_radius		127. cm
+#/detector/TOFRICH/addAerogelLayer	105. cm		4. cm		1.03
+#/detector/TOFRICH/outer_radius		129. cm
+
+### focusing configuration
+#/detector/TOFRICH/addAerogelLayer	105. cm		1. cm		1.03
+#/detector/TOFRICH/addAerogelLayer	106. cm		1. cm		1.0326
+#/detector/TOFRICH/outer_radius		127. cm
+
+
+### optical processes
+/process/optical/processActivation OpAbsorption false
+/process/optical/processActivation OpRayleigh true
+
+### initialize
+/run/initialize
+
+### magnetic field
+/globalField/verbose 1
+/globalField/setValue 0. 0. 0. tesla
+
+### transport
+/stacking/transport all
+/tracking/verbose 0
+
+### generator
+#/generator/select pythia8
+#/pythia8/config pythia8_pp14.cfg
+#/pythia8/cuts/eta -2.0 2.0
+#/pythia8/init
+#/run/beamOn 100
+#exit
+
+### optical photons
+#/generator/select gun
+#/gun/particle opticalphoton
+#/gun/position 105. 0. 0. cm
+#/gun/direction 1 0. 0.
+#/control/alias Energies 6.19921 5.90401 5.63565 5.39062 5.16601 4.95937 4.76862 4.59201 4.42801 4.27532 4.13281 3.99949 3.87451 3.7571 3.64659 3.54241 3.44401 3.35092 3.26274 3.17908 3.0996 3.024 2.952 2.88335 2.81782 2.7552 2.69531 2.63796 2.583 2.53029 2.47968 2.43106 2.38431 2.33932 2.296 2.25426 2.214 2.17516 2.13766 2.10143 2.0664 2.03253 1.99975 1.968 1.93725 1.90745 1.87855 1.85051 1.8233 1.79687 1.7712 1.74626 1.722 1.69841 1.67546 1.65312 1.63137 1.61018 1.58954 1.56942 1.5498 1.53067 1.512 1.49379 1.476 1.45864 1.44168 1.42511 1.40891 1.39308 1.3776 1.36246 1.34765 1.33316 1.31898 1.3051 1.2915 1.27819 1.26514 1.25237 1.23984 1.22757 1.21553 1.20373 1.19216 1.1808 1.16966 1.15873 1.148 1.13747 1.12713 1.11697 1.107 1.09721 1.08758 1.07812 1.06883 1.05969 1.05071 1.04188
+#/control/alias nEvents 10000
+#/control/foreach energy.loop Energy {Energies}
+
+#exit
+
+### generator
+/generator/select gun
+/gun/particle pi-
+/gun/position 0 0 0 cm
+/gun/position 95. 0. 0. cm
+#/gun/direction 1. 0. 1.75
+/gun/direction 1 0. 0.
+/gun/momentumAmp 100. GeV
+/run/beamOn 10000
+
+exit
+
+/control/alias Momenta 0.5 0.6 0.7 0.8 0.9 1 1.1 1.2 1.3 1.4 1.5 1.6 1.7 1.8 1.9 2 2.1 2.2 2.3 2.4 2.5 2.6 2.7 2.8 2.9 3 3.1 3.2 3.3 3.4 3.5 3.6 3.7 3.8 3.9 4 4.1 4.2 4.3 4.4 4.5 4.6 4.7 4.8 4.9 5 5.1 5.2 5.3 5.4 5.5 5.6 5.7 5.8 5.9 6 6.1 6.2 6.3 6.4 6.5 6.6 6.7 6.8 6.9 7 7.1 7.2 7.3 7.4 7.5 7.6 7.7 7.8 7.9 8 8.1 8.2 8.3 8.4 8.5 8.6 8.7 8.8 8.9 9 9.1 9.2 9.3 9.4 9.5 9.6 9.7 9.8 9.9 10
+/control/alias nEvents 100
+/control/foreach momentum.loop Momentum {Momenta}
+
+/gun/particle e-
+/control/foreach momentum.loop Momentum {Momenta}
+
+/gun/particle kaon-
+/control/foreach momentum.loop Momentum {Momenta}
+
+/gun/particle proton
+/control/foreach momentum.loop Momentum {Momenta}
+
+
+exit
+
+/gun/particle pi+
+/gun/position 0 0 0 cm
+/gun/direction 1 0 0
+/gun/momentumAmp 7 GeV
+/run/beamOn 100
+
+/gun/particle kaon+
+/gun/position 0 0 0 cm
+/gun/direction 1 0 0
+/gun/momentumAmp 7 GeV
+/run/beamOn 100
+
+/gun/particle proton
+/gun/position 0 0 0 cm
+/gun/direction 1 0 0
+/gun/momentumAmp 7 GeV
+/run/beamOn 100
+

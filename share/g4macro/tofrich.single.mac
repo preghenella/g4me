@@ -1,0 +1,16 @@
+### TOFRICH detector definitions
+/control/execute tofrich.detector.mac
+
+### generator
+/generator/select gun
+/gun/particle mu-
+/gun/position 90. 0. 0. cm
+/gun/direction 1. 0. 0.
+/gun/momentumAmp 100 GeV
+
+### io
+/io/prefix tofrich.single
+/io/saveParticles false
+
+### run
+/run/beamOn 1

@@ -32,8 +32,9 @@
 /detector/TOFRICH/aerogel_layers	5
 
 ### new stuff				radius		thickness	rindex
-/detector/TOFRICH/addAerogelLayer	105. cm		2. cm		1.03
-/detector/TOFRICH/outer_radius		127. cm
+/detector/TOFRICH/inner_radius		100. cm
+/detector/TOFRICH/addAerogelLayer	100. cm		2. cm		1.03
+/detector/TOFRICH/outer_radius		122. cm
 
 ### optical processes
 /process/optical/processActivation OpAbsorption false
@@ -49,17 +50,3 @@
 ### transport
 /stacking/transport all
 /tracking/verbose 0
-
-### generator
-/generator/select pythia8
-#/pythia8/config pythia8_pp14.cfg
-/pythia8/config pythia8_XeXe.cfg
-/pythia8/cuts/eta -2.0 2.0
-/pythia8/init
-
-### io
-/io/prefix pythia8_pp14_5kG.tofrich
-/io/saveParticles false
-
-### run
-/run/beamOn 10
