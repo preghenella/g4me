@@ -230,7 +230,7 @@ DetectorConstruction::Construct(G4LogicalVolume *world_lv)
 	   << "     aerogel length     = " << length     / cm << " cm " << G4endl
 	   << "     aerogel rindex     = " << rindex                    << G4endl;
 
-    auto aerogel_m = ConstructMaterialAerogel(std::string("aerogel_m_") + std::to_string(ilayer), true, rindex);
+    auto aerogel_m = ConstructMaterialAerogel(std::string("aerogel_m_") + std::to_string(ilayer), rindex < 0, fabs(rindex));
     auto aerogel_os = ConstructOpticalSurfaceAerogel(std::string("aerogel_os_") + std::to_string(ilayer));
     
     auto aerogel_s = new G4Tubs(std::string("aerogel_s_") + std::to_string(ilayer),
@@ -392,11 +392,29 @@ DetectorConstruction::ConstructMaterialAerogel(std::string name, bool isConstN, 
   
   double rayleigh_energy[18] = {1.23984 * eV, 1.3051 * eV, 1.3776 * eV, 1.45864 * eV, 1.5498 * eV, 1.65312 * eV, 1.7712 * eV, 1.90745 * eV, 2.0664 * eV, 2.25426 * eV, 2.47968 * eV, 2.7552 * eV, 3.0996 * eV, 3.54241 * eV, 4.13281 * eV, 4.95937 * eV, 6.19921 * eV, 8.26561 * eV};
   double rayleigh_value[18] = {229.885 * cm, 187.243 * cm, 150.828 * cm, 120.001 * cm, 94.1609 * cm, 72.7371 * cm, 55.1954 * cm, 41.0359 * cm, 29.7931 * cm, 21.0359 * cm, 14.3678 * cm, 9.42672 * cm, 5.88506 * cm, 3.44971 * cm, 1.86207 * cm, 0.897989 * cm, 0.367816 * cm, 0.116379 * cm};
+
+  /** use aerogel refractive index as from Tabata
+      derived using Sellmeier equation
+      ( n**2 − 1 ) = a0 λ**2 / ( λ**2 − λ0**2 )
+      
+      a0 = 0.0616 +- 0.0002
+      λ0 = 56.5 +- 5.9
+
+      then scale the values such that the n at 400 nm equals to requested value 
+
+  **/
+
+  double rindex_energy[18] = {1.23984 * eV, 1.3051 * eV, 1.3776 * eV, 1.45864 * eV, 1.5498 * eV, 1.65312 * eV, 1.7712 * eV, 1.90745 * eV, 2.0664 * eV, 2.25426 * eV, 2.47968 * eV, 2.7552 * eV, 3.0996 * eV, 3.54241 * eV, 4.13281 * eV, 4.95937 * eV, 6.19921 * eV, 8.26561 * eV};
+  double rindex_value[18] = {1.03044, 1.03045, 1.03046, 1.03047, 1.03049, 1.03051, 1.03054, 1.03057, 1.03061, 1.03066, 1.03073, 1.03082, 1.03095, 1.03114, 1.03144, 1.03195, 1.03293, 1.03527};
   
-  if (isConstN) for (int i = 0; i < 10; ++i) n[i] = constN;
+  for (int i = 0; i < 18; ++i) {
+    if (isConstN) rindex_value[i] = constN;
+    else rindex_value[i] *= constN / 1.03095;
+  }
+
   
   G4MaterialPropertiesTable *mpt = new G4MaterialPropertiesTable(); 
-  mpt->AddProperty("RINDEX", energy, n, 10)->SetSpline(true);
+  mpt->AddProperty("RINDEX", rindex_energy, rindex_value, 18)->SetSpline(true);
   //  mpt->AddProperty("ABSLENGTH", gAbsLength.GetX(), gAbsLength.GetY(), gAbsLength.GetN())->SetSpline(true);
   //  mpt->AddProperty("RAYLEIGH", gRayleigh.GetX(), gRayleigh.GetY(), gRayleigh.GetN())->SetSpline(true);
 
