@@ -17,8 +17,8 @@ double sensor_radius = 122.; // [cm]
 double time_resolution_sptr = 0.05; // [ns]
 double time_resolution_mip = 0.02; // [ns]
 
-double noise_window = 25.e-9; // [s]
-double noise_rate = 500.e3; // [Hz/channel]
+double noise_window = 10.e-9; // [s]
+double noise_rate = 0;//100.e3; // [Hz/channel]
 
 bool usePDE = true;
 bool usePixel = true;
