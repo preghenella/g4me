@@ -4,7 +4,7 @@ float sensor_r = 122.; // [cm] radius of sensor surface
 float emission_r = 101.; // [cm] radius of emission point
 
 float radiator_n = 1.03; // refractive index of radiator
-float expansion_n = 1.00; // refractive index of expansion
+float expansion_n = 1.0003; // refractive index of expansion
 
 float radiator_dr = 2.; // [cm] radial thickness of radiator
 float expansion_dr = 20.; // [cm] radial thickness of expansion
@@ -57,9 +57,9 @@ read(const char *fname, int startev = 0, int maxev = kMaxInt)
   /** histograms **/
   auto hMap = new TH2F("hMap", ";r#varphi (cm);z (cm)", 2440, -383.27430, 383.27430, 1280, -201.06193, 201.06193);
   auto hAngle = new TH1F("hAngle", ";#theta_{Ch} (rad)", 200, 0., 1.);
-  auto hAngleP = new TH2F("hAngleP", ";p (GeV/c);#theta_{Ch} (rad)", 1000, 0., 10., 200, 0., 1.);
-  auto hAllAngle = new TH1F("hAllAngle", ";#theta_{Ch} (rad)", 200, 0., 1.);
-  auto hAllAngle_tof = new TH1F("hAllAngle_tof", ";#theta_{Ch} (rad)", 200, 0., 1.);
+  auto hAngleP = new TH2F("hAngleP", ";p (GeV/c);#theta_{Ch} (rad)", 10000, 0., 100., 200, 0., 1.);
+  auto hAllAngle = new TH1F("hAllAngle", ";#theta_{Ch} (rad)", 2000, 0., 1.);
+  auto hAllAngle_tof = new TH1F("hAllAngle_tof", ";#theta_{Ch} (rad)", 2000, 0., 1.);
   auto hTime = new TH1F("hTime", ";time (ns)", 100, 0., 10.);
 
   auto hAngleTime = new TH2F("hAngleTime", ";#theta_{Ch} (rad);time (ns)", 200, 0., 1., 100, 0., 10.);
