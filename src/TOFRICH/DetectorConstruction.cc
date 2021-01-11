@@ -40,6 +40,8 @@ DetectorConstruction::DetectorConstruction()
   , mOuterLengthCmd(nullptr)
   , mAerogelThicknessCmd(nullptr)
   , mSensorThicknessCmd(nullptr)
+  , mSensorRadiusCmd(nullptr)
+  , mSensorLengthCmd(nullptr)
   , mAerogelRIndexCmd(nullptr)
   , mVesselRIndexCmd(nullptr)
   , mAerogelLayersCmd(nullptr)
@@ -49,6 +51,8 @@ DetectorConstruction::DetectorConstruction()
   , mOuterLength(135. * cm)
   , mAerogelThickness(5. * cm)
   , mSensorThickness(500. * um)
+  , mSensorRadius(135. * cm)
+  , mSensorLength(135. * cm)
   , mAerogelRIndex(1.02)
   , mVesselRIndex(1.00)
   , mAerogelLayers(5)
@@ -91,6 +95,18 @@ DetectorConstruction::DetectorConstruction()
   mSensorThicknessCmd->SetParameterName("aerogel thickness", false);
   mSensorThicknessCmd->SetUnitCategory("Length");
   mSensorThicknessCmd->AvailableForStates(G4State_PreInit);
+  
+  mSensorRadiusCmd = new G4UIcmdWithADoubleAndUnit("/detector/TOFRICH/sensor_radius", this);
+  mSensorRadiusCmd->SetGuidance("Radius of sensor layer.");
+  mSensorRadiusCmd->SetParameterName("sensor radius", false);
+  mSensorRadiusCmd->SetUnitCategory("Length");
+  mSensorRadiusCmd->AvailableForStates(G4State_PreInit);
+  
+  mSensorLengthCmd = new G4UIcmdWithADoubleAndUnit("/detector/TOFRICH/sensor_length", this);
+  mSensorLengthCmd->SetGuidance("Length of the sensor layer.");
+  mSensorLengthCmd->SetParameterName("sensor length", false);
+  mSensorLengthCmd->SetUnitCategory("Length");
+  mSensorLengthCmd->AvailableForStates(G4State_PreInit);
   
   mAerogelRIndexCmd = new G4UIcmdWithADouble("/detector/TOFRICH/aerogel_rindex", this);
   mAerogelRIndexCmd->SetGuidance("Aerogel refractive index.");
@@ -141,6 +157,10 @@ DetectorConstruction::SetNewValue(G4UIcommand *command, G4String value)
     mAerogelThickness = mAerogelThicknessCmd->GetNewDoubleValue(value);
   if (command == mSensorThicknessCmd)
     mSensorThickness = mSensorThicknessCmd->GetNewDoubleValue(value);
+  if (command == mSensorRadiusCmd)
+    mSensorRadius = mSensorRadiusCmd->GetNewDoubleValue(value);
+  if (command == mSensorLengthCmd)
+    mSensorLength = mSensorLengthCmd->GetNewDoubleValue(value);
   if (command == mAerogelRIndexCmd)
     mAerogelRIndex = mAerogelRIndexCmd->GetNewDoubleValue(value);
   if (command == mVesselRIndexCmd)
@@ -175,6 +195,8 @@ DetectorConstruction::Construct(G4LogicalVolume *world_lv)
 	 << "     outer length      = " << mOuterLength      / cm << " cm " << G4endl
 	 << "     aerogel thickness = " << mAerogelThickness / cm << " cm " << G4endl
 	 << "     sensor thickness  = " << mSensorThickness  / um << " um " << G4endl
+	 << "     sensor radius     = " << mSensorRadius     / cm << " cm " << G4endl
+	 << "     sensor length     = " << mSensorLength     / cm << " cm " << G4endl
 	 << "     aerogel rindex    = " << mAerogelRIndex                   << G4endl
 	 << "     vessel rindex     = " << mVesselRIndex                    << G4endl
 	 << "     aerogel layers    = " << mAerogelLayers                   << G4endl;
@@ -315,9 +337,9 @@ DetectorConstruction::Construct(G4LogicalVolume *world_lv)
   auto sensor_os = ConstructOpticalSurfaceSensor("sensor_os");
 
   auto sensor_s = new G4Tubs("sensor_s",
-			     mOuterRadius - 0.5 * mSensorThickness,
-			     mOuterRadius + 0.5 * mSensorThickness,
-			     mOuterLength,
+			     mSensorRadius - 0.5 * mSensorThickness,
+			     mSensorRadius + 0.5 * mSensorThickness,
+			     mSensorLength,
 			     0., 2. * M_PI);
   
   auto sensor_lv = new G4LogicalVolume(sensor_s, sensor_m, "sensor_lv");

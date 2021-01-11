@@ -27,6 +27,8 @@
 /detector/TOFRICH/outer_length 		129. cm
 /detector/TOFRICH/aerogel_thickness 	5.0  cm
 /detector/TOFRICH/sensor_thickness	500. um
+/detector/TOFRICH/sensor_radius 	129. cm
+/detector/TOFRICH/sensor_length 	129. cm
 /detector/TOFRICH/aerogel_rindex	1.03
 /detector/TOFRICH/vessel_rindex		1.00028201
 /detector/TOFRICH/aerogel_layers	5

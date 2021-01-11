@@ -56,6 +56,8 @@ protected:
   G4UIcmdWithADoubleAndUnit *mOuterLengthCmd;
   G4UIcmdWithADoubleAndUnit *mAerogelThicknessCmd;
   G4UIcmdWithADoubleAndUnit *mSensorThicknessCmd;
+  G4UIcmdWithADoubleAndUnit *mSensorRadiusCmd;
+  G4UIcmdWithADoubleAndUnit *mSensorLengthCmd;
   G4UIcmdWithADouble *mAerogelRIndexCmd;
   G4UIcmdWithADouble *mVesselRIndexCmd;
   G4UIcmdWithAnInteger *mAerogelLayersCmd;
@@ -66,6 +68,8 @@ protected:
   double mOuterLength;
   double mAerogelThickness;
   double mSensorThickness;
+  double mSensorRadius;
+  double mSensorLength;
   double mAerogelRIndex;
   double mVesselRIndex;
   int mAerogelLayers;
