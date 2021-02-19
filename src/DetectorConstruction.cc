@@ -24,6 +24,7 @@
 #include "G4UIcmdWithADoubleAndUnit.hh"
 
 #include "TOFRICH/DetectorConstruction.hh"
+#include "FCT/DetectorConstruction.hh"
 
 namespace G4me {
 
@@ -33,6 +34,7 @@ DetectorConstruction::DetectorConstruction()
   : mDetectorDirectory(nullptr)
   , mDetectorEnableCmd(nullptr)
   , mTOFRICH(nullptr)
+  , mFCT(nullptr)
   , mPipeDirectory(nullptr)
   , mPipeRadiusCmd(nullptr)
   , mPipeThicknessCmd(nullptr)
@@ -49,7 +51,7 @@ DetectorConstruction::DetectorConstruction()
   mDetectorEnableCmd = new G4UIcmdWithAString("/detector/enable", this);
   mDetectorEnableCmd->SetGuidance("Enable detector module");
   mDetectorEnableCmd->SetParameterName("select", false);
-  mDetectorEnableCmd->SetCandidates("TOFRICH");
+  mDetectorEnableCmd->SetCandidates("TOFRICH FCT");
   mDetectorEnableCmd->AvailableForStates(G4State_PreInit);
   
   /** beam pipe **/
@@ -103,6 +105,7 @@ DetectorConstruction::SetNewValue(G4UIcommand *command, G4String value)
   
   if (command == mDetectorEnableCmd) {
     if (value.compare("TOFRICH") == 0) mTOFRICH = new TOFRICH::DetectorConstruction();
+    if (value.compare("FCT") == 0) mFCT = new FCT::DetectorConstruction();
   }
   
   if (command == mPipeRadiusCmd)
@@ -234,6 +237,9 @@ DetectorConstruction::Construct() {
   if (mTOFRICH)
     mTOFRICH->Construct(world_lv);
 
+  if (mFCT)
+    mFCT->Construct(world_lv);
+
   return world_pv;
 }
 
@@ -250,6 +256,10 @@ DetectorConstruction::ConstructSDandField()
 
   if (mTOFRICH)
     for (const auto &sd : mTOFRICH->GetSensitiveDetectors())
+      SetSensitiveDetector(sd.first, sd.second, false);
+  
+  if (mFCT)
+    for (const auto &sd : mFCT->GetSensitiveDetectors())
       SetSensitiveDetector(sd.first, sd.second, false);
   
   G4ThreeVector fieldValue = G4ThreeVector();

@@ -3,6 +3,7 @@
 
 set(SOURCES
   TOFRICH/DetectorConstruction.cc
+  FCT/DetectorConstruction.cc
   DetectorConstruction.cc
   SensitiveDetector.cc
   PrimaryGeneratorAction.cc
@@ -21,6 +22,7 @@ set(SOURCES
 
 set(HEADERS
   TOFRICH/DetectorConstruction.hh
+  FCT/DetectorConstruction.hh
   DetectorConstruction.hh
   SensitiveDetector.hh
   PrimaryGeneratorAction.hh

@@ -24,6 +24,10 @@ namespace TOFRICH {
   class DetectorConstruction;
 }
 
+namespace FCT {
+  class DetectorConstruction;
+}
+
 class DetectorConstruction : public G4VUserDetectorConstruction,
 			     public G4UImessenger
 {
@@ -44,6 +48,7 @@ protected:
   G4UIcmdWithAString *mDetectorEnableCmd;  
 
   TOFRICH::DetectorConstruction *mTOFRICH;
+  FCT::DetectorConstruction *mFCT;
   
   G4UIdirectory *mPipeDirectory;
   G4UIcmdWithADoubleAndUnit *mPipeRadiusCmd;
