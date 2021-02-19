@@ -116,16 +116,16 @@ DetectorConstruction::Construct(G4LogicalVolume *world_lv) {
 	   << "          rmax = " << converter["rmax"]      / cm << " cm " << G4endl
 	   << "     thickness = " << converter["thickness"] / cm << " cm " << G4endl;
 
-    auto converter_s = new G4Tubs(std::string("converter_s_") + std::to_string(iconverter),
+    auto converter_s = new G4Tubs(std::string("fct_converter_s_") + std::to_string(iconverter),
 				  converter["rmin"], converter["rmax"], converter["thickness"],
 				  0., 2. * M_PI);
 
-    auto converter_lv = new G4LogicalVolume(converter_s, pb, std::string("converter_lv_") + std::to_string(iconverter));
+    auto converter_lv = new G4LogicalVolume(converter_s, pb, std::string("fct_converter_lv_") + std::to_string(iconverter));
     
     auto converter_pv = new G4PVPlacement(nullptr,
 					  G4ThreeVector(converter["x"], converter["y"], converter["z"]),
 					  converter_lv,
-					  std::string("converter_pv_") + std::to_string(iconverter),
+					  std::string("fct_converter_pv_") + std::to_string(iconverter),
 					  world_lv,
 					  false,
 					  iconverter,
@@ -147,16 +147,17 @@ DetectorConstruction::Construct(G4LogicalVolume *world_lv) {
 	   << "          rmax = " << sensor["rmax"]      / cm << " cm " << G4endl
 	   << "     thickness = " << sensor["thickness"] / cm << " cm " << G4endl;
     
-    auto sensor_s = new G4Tubs(std::string("sensor_s_") + std::to_string(isensor),
+    auto sensor_s = new G4Tubs(std::string("fct_sensor_s_") + std::to_string(isensor),
 			       sensor["rmin"], sensor["rmax"], sensor["thickness"],
 			       0., 2. * M_PI);
 
-    auto sensor_lv = new G4LogicalVolume(sensor_s, pb, std::string("sensor_lv_") + std::to_string(isensor));
+    //    auto sensor_lv = new G4LogicalVolume(sensor_s, pb, std::string("sensor_lv_") + std::to_string(isensor));
+    auto sensor_lv = new G4LogicalVolume(sensor_s, pb, "fct_sensor_lv");
     
     auto sensor_pv = new G4PVPlacement(nullptr,
 					  G4ThreeVector(sensor["x"], sensor["y"], sensor["z"]),
 					  sensor_lv,
-					  std::string("sensor_pv_") + std::to_string(isensor),
+					  std::string("fct_sensor_pv_") + std::to_string(isensor),
 					  world_lv,
 					  false,
 					  isensor,
@@ -165,11 +166,10 @@ DetectorConstruction::Construct(G4LogicalVolume *world_lv) {
     ++isensor;
   }
 
-  auto sensor_sd = new SensitiveDetector("sensor_sd");
+  auto sensor_sd = new SensitiveDetector("fct_sensor_sd");
   G4SDManager::GetSDMpointer()->AddNewDetector(sensor_sd);
-  RegisterSensitiveDetector("sensor_lv", sensor_sd);
-  
-
+  RegisterSensitiveDetector("fct_sensor_lv", sensor_sd);
+    
 }
 
 /*****************************************************************/

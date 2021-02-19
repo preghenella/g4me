@@ -260,7 +260,7 @@ DetectorConstruction::ConstructSDandField()
   
   if (mFCT)
     for (const auto &sd : mFCT->GetSensitiveDetectors())
-      SetSensitiveDetector(sd.first, sd.second, false);
+      SetSensitiveDetector(sd.first, sd.second, true);
   
   G4ThreeVector fieldValue = G4ThreeVector();
   auto MagFieldMessenger = new G4GlobalMagFieldMessenger(fieldValue);
