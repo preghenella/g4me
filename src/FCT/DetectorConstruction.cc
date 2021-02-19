@@ -155,13 +155,13 @@ DetectorConstruction::Construct(G4LogicalVolume *world_lv) {
     auto sensor_lv = new G4LogicalVolume(sensor_s, pb, "fct_sensor_lv");
     
     auto sensor_pv = new G4PVPlacement(nullptr,
-					  G4ThreeVector(sensor["x"], sensor["y"], sensor["z"]),
-					  sensor_lv,
-					  std::string("fct_sensor_pv_") + std::to_string(isensor),
-					  world_lv,
-					  false,
-					  isensor,
-					  false);  
+				       G4ThreeVector(sensor["x"], sensor["y"], sensor["z"]),
+				       sensor_lv,
+				       std::string("fct_sensor_pv_") + std::to_string(isensor),
+				       world_lv,
+				       false,
+				       100 + isensor,
+				       false);  
     
     ++isensor;
   }
