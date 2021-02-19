@@ -87,7 +87,7 @@ DetectorConstruction::SetNewValue(G4UIcommand *command, G4String value)
     G4double rmin = command->ConvertToDimensionedDouble(G4String(rmin_val + ' ' + unit));
     G4double rmax = command->ConvertToDimensionedDouble(G4String(rmax_val + ' ' + unit));
     G4double thickness = command->ConvertToDimensionedDouble(G4String(thickness_val + ' ' + unit));
-    mSensor.push_back({ {"x", x}, {"y", y}, {"z", z}, {"rmin", rmax}, {"rmax", rmax}, {"thickness", thickness} });
+    mSensor.push_back({ {"x", x}, {"y", y}, {"z", z}, {"rmin", rmin}, {"rmax", rmax}, {"thickness", thickness} });
   }
 }
   
