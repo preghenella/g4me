@@ -43,9 +43,11 @@ protected:
   G4Material *ConstructMaterialAerogel(std::string name, bool isConstN = false, double constN = 1.0);
   G4Material *ConstructMaterialVessel(bool isConstN = false, double constN = 1.0);
   G4Material *ConstructMaterialSensor(bool isConstN = false, double constN = 1.0);
+  G4Material *ConstructMaterialMirror();
 
   G4OpticalSurface *ConstructOpticalSurfaceAerogel(std::string name);
   G4OpticalSurface *ConstructOpticalSurfaceSensor(std::string name);
+  G4OpticalSurface *ConstructOpticalSurfaceMirror(std::string name);
 
   std::vector<std::pair<std::string, G4VSensitiveDetector *>> mSensitiveDetectors;
   
@@ -58,6 +60,9 @@ protected:
   G4UIcmdWithADoubleAndUnit *mSensorThicknessCmd;
   G4UIcmdWithADoubleAndUnit *mSensorRadiusCmd;
   G4UIcmdWithADoubleAndUnit *mSensorLengthCmd;
+  G4UIcmdWithADoubleAndUnit *mMirrorThicknessCmd;
+  G4UIcmdWithADoubleAndUnit *mMirrorRadiusCmd;
+  G4UIcmdWithADoubleAndUnit *mMirrorLengthCmd;
   G4UIcmdWithADouble *mAerogelRIndexCmd;
   G4UIcmdWithADouble *mVesselRIndexCmd;
   G4UIcmdWithAnInteger *mAerogelLayersCmd;
@@ -70,6 +75,9 @@ protected:
   double mSensorThickness;
   double mSensorRadius;
   double mSensorLength;
+  double mMirrorThickness;
+  double mMirrorRadius;
+  double mMirrorLength;
   double mAerogelRIndex;
   double mVesselRIndex;
   int mAerogelLayers;

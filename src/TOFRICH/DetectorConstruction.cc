@@ -42,6 +42,9 @@ DetectorConstruction::DetectorConstruction()
   , mSensorThicknessCmd(nullptr)
   , mSensorRadiusCmd(nullptr)
   , mSensorLengthCmd(nullptr)
+  , mMirrorThicknessCmd(nullptr)
+  , mMirrorRadiusCmd(nullptr)
+  , mMirrorLengthCmd(nullptr)
   , mAerogelRIndexCmd(nullptr)
   , mVesselRIndexCmd(nullptr)
   , mAerogelLayersCmd(nullptr)
@@ -53,6 +56,9 @@ DetectorConstruction::DetectorConstruction()
   , mSensorThickness(500. * um)
   , mSensorRadius(135. * cm)
   , mSensorLength(135. * cm)
+  , mMirrorThickness(500. * um)
+  , mMirrorRadius(135. * cm)
+  , mMirrorLength(135. * cm)
   , mAerogelRIndex(1.02)
   , mVesselRIndex(1.00)
   , mAerogelLayers(5)
@@ -108,6 +114,24 @@ DetectorConstruction::DetectorConstruction()
   mSensorLengthCmd->SetUnitCategory("Length");
   mSensorLengthCmd->AvailableForStates(G4State_PreInit);
   
+  mMirrorThicknessCmd = new G4UIcmdWithADoubleAndUnit("/detector/TOFRICH/mirror_thickness", this);
+  mMirrorThicknessCmd->SetGuidance("Thickness of the mirror.");
+  mMirrorThicknessCmd->SetParameterName("aerogel thickness", false);
+  mMirrorThicknessCmd->SetUnitCategory("Length");
+  mMirrorThicknessCmd->AvailableForStates(G4State_PreInit);
+  
+  mMirrorRadiusCmd = new G4UIcmdWithADoubleAndUnit("/detector/TOFRICH/mirror_radius", this);
+  mMirrorRadiusCmd->SetGuidance("Radius of mirror.");
+  mMirrorRadiusCmd->SetParameterName("mirror radius", false);
+  mMirrorRadiusCmd->SetUnitCategory("Length");
+  mMirrorRadiusCmd->AvailableForStates(G4State_PreInit);
+  
+  mMirrorLengthCmd = new G4UIcmdWithADoubleAndUnit("/detector/TOFRICH/mirror_length", this);
+  mMirrorLengthCmd->SetGuidance("Length of the mirror.");
+  mMirrorLengthCmd->SetParameterName("mirror length", false);
+  mMirrorLengthCmd->SetUnitCategory("Length");
+  mMirrorLengthCmd->AvailableForStates(G4State_PreInit);
+  
   mAerogelRIndexCmd = new G4UIcmdWithADouble("/detector/TOFRICH/aerogel_rindex", this);
   mAerogelRIndexCmd->SetGuidance("Aerogel refractive index.");
   mAerogelRIndexCmd->SetParameterName("aerogel rindex", false);
@@ -161,6 +185,12 @@ DetectorConstruction::SetNewValue(G4UIcommand *command, G4String value)
     mSensorRadius = mSensorRadiusCmd->GetNewDoubleValue(value);
   if (command == mSensorLengthCmd)
     mSensorLength = mSensorLengthCmd->GetNewDoubleValue(value);
+  if (command == mMirrorThicknessCmd)
+    mMirrorThickness = mMirrorThicknessCmd->GetNewDoubleValue(value);
+  if (command == mMirrorRadiusCmd)
+    mMirrorRadius = mMirrorRadiusCmd->GetNewDoubleValue(value);
+  if (command == mMirrorLengthCmd)
+    mMirrorLength = mMirrorLengthCmd->GetNewDoubleValue(value);
   if (command == mAerogelRIndexCmd)
     mAerogelRIndex = mAerogelRIndexCmd->GetNewDoubleValue(value);
   if (command == mVesselRIndexCmd)
@@ -197,6 +227,9 @@ DetectorConstruction::Construct(G4LogicalVolume *world_lv)
 	 << "     sensor thickness  = " << mSensorThickness  / um << " um " << G4endl
 	 << "     sensor radius     = " << mSensorRadius     / cm << " cm " << G4endl
 	 << "     sensor length     = " << mSensorLength     / cm << " cm " << G4endl
+	 << "     mirror thickness  = " << mMirrorThickness  / um << " um " << G4endl
+	 << "     mirror radius     = " << mMirrorRadius     / cm << " cm " << G4endl
+	 << "     mirror length     = " << mMirrorLength     / cm << " cm " << G4endl
 	 << "     aerogel rindex    = " << mAerogelRIndex                   << G4endl
 	 << "     vessel rindex     = " << mVesselRIndex                    << G4endl
 	 << "     aerogel layers    = " << mAerogelLayers                   << G4endl;
@@ -331,6 +364,33 @@ DetectorConstruction::Construct(G4LogicalVolume *world_lv)
   }
 #endif
   
+  /** mirror **/
+  
+  auto mirror_m = ConstructMaterialMirror();
+  auto mirror_os = ConstructOpticalSurfaceMirror("mirror_os");
+
+  auto mirror_s = new G4Tubs("mirror_s",
+			     mMirrorRadius - 0.5 * mMirrorThickness,
+			     mMirrorRadius + 0.5 * mMirrorThickness,
+			     mMirrorLength,
+			     0., 2. * M_PI);
+  
+  auto mirror_lv = new G4LogicalVolume(mirror_s, mirror_m, "mirror_lv");
+  
+  auto mirror_pv = new G4PVPlacement(nullptr,
+					G4ThreeVector(0., 0., 0),
+					mirror_lv,
+					"mirror_pv",
+					vessel_lv,
+					false,
+					0,
+					false);  
+
+  auto mirror_ls = new G4LogicalBorderSurface("mirror_ls",
+					      vessel_pv,
+					      mirror_pv,
+					      mirror_os);
+
   /** sensor **/
   
   auto sensor_m = ConstructMaterialSensor(true, 1.00);
@@ -483,6 +543,27 @@ DetectorConstruction::ConstructMaterialVessel(bool isConstN, double constN)
 /*****************************************************************/
 
 G4Material *
+DetectorConstruction::ConstructMaterialMirror()
+{
+
+  /** element from nist **/
+  G4NistManager *nist = G4NistManager::Instance();
+  auto mat = nist->FindOrBuildMaterial("G4_Al");
+
+  /** material properies table **/
+  G4double energy[2] = { 1.2915 * eV, 5.166 * eV };
+  G4double n[2] = { 1., 1. };
+  
+  G4MaterialPropertiesTable *mpt = new G4MaterialPropertiesTable(); 
+  mpt->AddProperty("RINDEX", energy, n, 2);
+  mat->SetMaterialPropertiesTable(mpt);
+
+  return mat;
+}
+
+/*****************************************************************/
+
+G4Material *
 DetectorConstruction::ConstructMaterialSensor(bool isConstN, double constN)
 {
 
@@ -525,6 +606,25 @@ DetectorConstruction::ConstructOpticalSurfaceAerogel(std::string name)
 
   auto os = new G4OpticalSurface(name);
   os->SetType(dielectric_dielectric);
+  os->SetFinish(polished);
+  os->SetModel(glisur);
+  os->SetMaterialPropertiesTable(mpt);
+
+  return os;
+}
+
+/*****************************************************************/
+
+G4OpticalSurface *
+DetectorConstruction::ConstructOpticalSurfaceMirror(std::string name)
+{
+  G4double energy[2] = { 1.2915 * eV, 5.166 * eV };
+  G4double reflectivity[2] = {1., 1.};
+  auto mpt = new G4MaterialPropertiesTable();
+  mpt->AddProperty("REFLECTIVITY", energy, reflectivity, 2);
+
+  auto os = new G4OpticalSurface(name);
+  os->SetType(dielectric_metal);
   os->SetFinish(polished);
   os->SetModel(glisur);
   os->SetMaterialPropertiesTable(mpt);
