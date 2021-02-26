@@ -54,7 +54,7 @@ DetectorConstruction::DetectorConstruction()
   mAddAbsoCylinderCmd->SetParameter(posUnit);
   mAddAbsoCylinderCmd->AvailableForStates(G4State_PreInit);
 
-  mAddAbsoBoxCmd = new G4UIcommand("/detector/ABSO/addCylinder", this);
+  mAddAbsoBoxCmd = new G4UIcommand("/detector/ABSO/addBox", this);
   mAddAbsoBoxCmd->SetGuidance("Add absorber cylinder.");
   mAddAbsoBoxCmd->SetParameter(new G4UIparameter("dX", 'd', false));
   mAddAbsoBoxCmd->SetParameter(new G4UIparameter("dY", 'd', false));
