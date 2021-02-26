@@ -51,6 +51,10 @@ protected:
   G4UIdirectory *mDetectorDirectory;
   G4UIcmdWithAString *mDetectorEnableCmd;
 
+  G4UIdirectory *mGeometryIODirectory;
+  G4UIcmdWithAString *mPVIDMapFileCmd;
+  G4String mPVIDMapFile;
+
   TOFRICH::DetectorConstruction *mTOFRICH;
   FCT::DetectorConstruction *mFCT;
   ABSO::DetectorConstruction *mABSO;

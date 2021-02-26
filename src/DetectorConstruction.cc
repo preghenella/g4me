@@ -1,6 +1,8 @@
 /// @author: Roberto Preghenella
 /// @email: preghenella@bo.infn.it
 
+#include <fstream>
+
 #include "DetectorConstruction.hh"
 #include "SensitiveDetector.hh"
 #include "G4SystemOfUnits.hh"
@@ -9,6 +11,7 @@
 #include "G4Tubs.hh"
 #include "G4LogicalVolume.hh"
 #include "G4LogicalVolumeStore.hh"
+#include "G4PhysicalVolumeStore.hh"
 #include "G4PVPlacement.hh"
 #include "G4GlobalMagFieldMessenger.hh"
 #include "G4AutoDelete.hh"
@@ -34,6 +37,9 @@ namespace G4me {
 DetectorConstruction::DetectorConstruction()
   : mDetectorDirectory(nullptr)
   , mDetectorEnableCmd(nullptr)
+  , mGeometryIODirectory(nullptr)
+  , mPVIDMapFileCmd(nullptr)
+  , mPVIDMapFile("PVIDMapFile.dat")
   , mTOFRICH(nullptr)
   , mFCT(nullptr)
   , mPipeDirectory(nullptr)
@@ -90,6 +96,12 @@ DetectorConstruction::DetectorConstruction()
   mTrackerAddLayerCmd->SetParameter(new G4UIparameter("thickness", 'd', false));
   mTrackerAddLayerCmd->SetParameter(new G4UIparameter("unit", 's', false));
   mTrackerAddLayerCmd->AvailableForStates(G4State_PreInit);
+
+  mGeometryIODirectory = new G4UIdirectory("/detector/geometryio/");
+  mPVIDMapFileCmd = new G4UIcmdWithAString("/detector/geometryio/PVIDMapFile", this);
+  mPVIDMapFileCmd->SetGuidance("Mapping copy number to physical volume file.");
+  mPVIDMapFileCmd->SetParameterName("pvidmap_file", false);
+  mPVIDMapFileCmd->AvailableForStates(G4State_PreInit);
 }
 
 /*****************************************************************/
@@ -103,6 +115,10 @@ DetectorConstruction::~DetectorConstruction()
 void
 DetectorConstruction::SetNewValue(G4UIcommand *command, G4String value)
 {
+
+  if (command == mPVIDMapFileCmd) {
+    mPVIDMapFile = value;
+  }
 
   if (command == mDetectorEnableCmd) {
     if (value.compare("TOFRICH") == 0) mTOFRICH = new TOFRICH::DetectorConstruction();
@@ -244,6 +260,18 @@ DetectorConstruction::Construct() {
 
   if (mABSO)
     mABSO->Construct(world_lv);
+
+
+  // Now dump a table of copy numbers matched to physical volumes
+  std::ofstream pvidMapFile;
+  pvidMapFile.open(mPVIDMapFile.c_str());
+
+  //auto phVolStore = static_cast<std::vector<G4VPhysicalVolume*>>(G4PhysicalVolumeStore::GetInstance());
+  auto& phVolStore = *(G4PhysicalVolumeStore::GetInstance());
+  for(auto phVol : phVolStore) {
+    pvidMapFile << phVol->GetCopyNo() << " " << phVol->GetName() << "\n";
+  }
+  pvidMapFile.close();
 
   return world_pv;
 }

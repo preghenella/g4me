@@ -12,8 +12,7 @@ class G4LogicalVolume;
 
 class G4String;
 
-class G4UIcmdWithADoubleAndUnit;
-class G4UIcmdWithAString;
+class G4UIcommand;
 class G4UIdirectory;
 
 namespace G4me {
@@ -22,9 +21,17 @@ namespace ABSO {
 
 struct Cylinder
 {
-  double rMin;
-  double rMax;
+  double x, y, z;
+  double rMin, rMax;
   double length;
+  G4String material;
+  bool addSD;
+};
+
+struct Box
+{
+  double x, y, z;
+  double dX, dY, dZ;
   G4String material;
   bool addSD;
 };
@@ -49,10 +56,11 @@ protected:
   std::vector<std::pair<std::string, G4VSensitiveDetector *>> mSensitiveDetectors;
 
   G4UIdirectory *mDetectorDirectory;
-
-  G4UIcmdWithADoubleAndUnit *mAddAbsoCylinderCmd;
+  G4UIcommand *mAddAbsoCylinderCmd;
+  G4UIcommand *mAddAbsoBoxCmd;
 
   std::vector<Cylinder> mCylinders;
+  std::vector<Box> mBoxes;
 
 };
 
