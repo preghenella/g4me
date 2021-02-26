@@ -6,7 +6,7 @@
 
 #include "G4VUserDetectorConstruction.hh"
 #include "G4UImessenger.hh"
-#include <map> 
+#include <map>
 
 
 class G4String;
@@ -28,15 +28,19 @@ namespace FCT {
   class DetectorConstruction;
 }
 
+namespace ABSO {
+  class DetectorConstruction;
+}
+
 class DetectorConstruction : public G4VUserDetectorConstruction,
 			     public G4UImessenger
 {
-  
+
 public:
-  
+
   DetectorConstruction();
   ~DetectorConstruction() override;
-  
+
   G4VPhysicalVolume *Construct() override;
   void ConstructSDandField() override;
 
@@ -45,11 +49,12 @@ protected:
   void SetNewValue(G4UIcommand *command, G4String value);
 
   G4UIdirectory *mDetectorDirectory;
-  G4UIcmdWithAString *mDetectorEnableCmd;  
+  G4UIcmdWithAString *mDetectorEnableCmd;
 
   TOFRICH::DetectorConstruction *mTOFRICH;
   FCT::DetectorConstruction *mFCT;
-  
+  ABSO::DetectorConstruction *mABSO;
+
   G4UIdirectory *mPipeDirectory;
   G4UIcmdWithADoubleAndUnit *mPipeRadiusCmd;
   G4UIcmdWithADoubleAndUnit *mPipeThicknessCmd;
@@ -65,5 +70,5 @@ protected:
 };
 
 } /** namespace G4me **/
-  
+
 #endif /** _DetectorConstruction_h_ **/

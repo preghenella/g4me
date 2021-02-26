@@ -1,0 +1,52 @@
+/process/optical/verbose 0
+
+### beam pipe
+/detector/pipe/radius 1.6 cm
+/detector/pipe/length 200. cm
+/detector/pipe/thickness 500 um
+
+### inner tracker           radius      length          thickness
+/detector/tracker/addLayer  1.8 cm	1.8  cm		50. um
+/detector/tracker/addLayer  2.8 cm	2.8  cm 	50. um
+/detector/tracker/addLayer  3.8 cm	3.8  cm 	50. um
+
+### outer tracker           radius      length          thickness
+/detector/tracker/addLayer   8. cm	8.0  cm		500. um
+/detector/tracker/addLayer  20. cm	20.  cm 	500. um
+/detector/tracker/addLayer  25. cm	25.  cm 	500. um
+/detector/tracker/addLayer  40. cm	40.  cm 	500. um
+/detector/tracker/addLayer  55. cm	55.  cm 	500. um
+/detector/tracker/addLayer  80. cm	80.  cm    	500. um
+/detector/tracker/addLayer 100. cm	100. cm  	500. um
+
+### ABSO
+/detector/enable ABSO
+#			   rmin	rmax runit length	length_unit	material add_sd
+#
+/detector/ABSO/addCylinder 200.   367.    cm    300.    cm    G4_Pb   false
+/detector/ABSO/addCylinder 367.   368.    cm    300.    cm    G4_Galactic   true
+
+
+### initialize
+/run/initialize
+
+### magnetic field
+/globalField/verbose 1
+/globalField/setValue 0. 0. 0.5 tesla
+
+### transport
+/stacking/transport all
+/tracking/verbose 0
+
+### generator
+/generator/select pythia8
+/pythia8/config pythia8_pp14.cfg
+/pythia8/cuts/eta -2.0 2.0
+/pythia8/init
+
+### io
+/io/prefix pythia8_pp14_5kG.fct
+/io/saveParticles false
+
+### run
+/run/beamOn 10
