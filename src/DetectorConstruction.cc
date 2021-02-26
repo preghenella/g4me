@@ -25,6 +25,7 @@
 
 #include "TOFRICH/DetectorConstruction.hh"
 #include "FCT/DetectorConstruction.hh"
+#include "ABSO/DetectorConstruction.hh"
 
 namespace G4me {
 
@@ -53,9 +54,9 @@ DetectorConstruction::DetectorConstruction()
   mDetectorEnableCmd->SetParameterName("select", false);
   mDetectorEnableCmd->SetCandidates("TOFRICH FCT");
   mDetectorEnableCmd->AvailableForStates(G4State_PreInit);
-  
+
   /** beam pipe **/
-  
+
   mPipeDirectory = new G4UIdirectory("/detector/pipe/");
 
   mPipeRadiusCmd = new G4UIcmdWithADoubleAndUnit("/detector/pipe/radius", this);
@@ -63,13 +64,13 @@ DetectorConstruction::DetectorConstruction()
   mPipeRadiusCmd->SetParameterName("radius", false);
   mPipeRadiusCmd->SetUnitCategory("Length");
   mPipeRadiusCmd->AvailableForStates(G4State_PreInit);
-  
+
   mPipeLengthCmd = new G4UIcmdWithADoubleAndUnit("/detector/pipe/length", this);
   mPipeLengthCmd->SetGuidance("Radius of the beam pipe.");
   mPipeLengthCmd->SetParameterName("length", false);
   mPipeLengthCmd->SetUnitCategory("Length");
   mPipeLengthCmd->AvailableForStates(G4State_PreInit);
-  
+
   mPipeThicknessCmd = new G4UIcmdWithADoubleAndUnit("/detector/pipe/thickness", this);
   mPipeThicknessCmd->SetGuidance("Thickness of the beam pipe.");
   mPipeThicknessCmd->SetParameterName("thickness", false);
@@ -79,7 +80,7 @@ DetectorConstruction::DetectorConstruction()
   /** tracker **/
 
   mTrackerDirectory = new G4UIdirectory("/detector/tracker/");
-  
+
   mTrackerAddLayerCmd = new G4UIcommand("/detector/tracker/addLayer", this);
   mTrackerAddLayerCmd->SetGuidance("Add a silicon tracker cylindrical layer.");
   mTrackerAddLayerCmd->SetParameter(new G4UIparameter("radius", 'd', false));
@@ -102,12 +103,13 @@ DetectorConstruction::~DetectorConstruction()
 void
 DetectorConstruction::SetNewValue(G4UIcommand *command, G4String value)
 {
-  
+
   if (command == mDetectorEnableCmd) {
     if (value.compare("TOFRICH") == 0) mTOFRICH = new TOFRICH::DetectorConstruction();
     if (value.compare("FCT") == 0) mFCT = new FCT::DetectorConstruction();
+    if (value.compare("ABSO") == 0) mABSO = new ABSO::DetectorConstruction();
   }
-  
+
   if (command == mPipeRadiusCmd)
     mPipeRadius = mPipeRadiusCmd->GetNewDoubleValue(value);
   if (command == mPipeThicknessCmd)
@@ -126,7 +128,7 @@ DetectorConstruction::SetNewValue(G4UIcommand *command, G4String value)
     mTrackerLayer.push_back({ {"radius", radius}, {"length", length}, {"thickness", thickness} });
   }
 }
-  
+
 /*****************************************************************/
 
 G4VPhysicalVolume *
@@ -138,7 +140,7 @@ DetectorConstruction::Construct() {
   auto air = nist->FindOrBuildMaterial("G4_AIR");
   auto be = nist->FindOrBuildMaterial("G4_Be");
   auto si = nist->FindOrBuildMaterial("G4_Si");
-  
+
   /** world **/
   auto world_s  = new G4Box("world_s", 1.5 * m, 1.5 * m, 3.0 * m);
   auto world_lv = new G4LogicalVolume(world_s, air, "world_lv");
@@ -149,7 +151,7 @@ DetectorConstruction::Construct() {
 				    0,                // its mother  volume
 				    false,            // no boolean operations
 				    0,                // copy number
-				    false);           // checking overlaps    
+				    false);           // checking overlaps
 
 
   /** beam pipe **/
@@ -158,7 +160,7 @@ DetectorConstruction::Construct() {
 	 << "     radius    = " << mPipeRadius    / cm << " cm " << G4endl
 	 << "     length    = " << mPipeLength    / cm << " cm " << G4endl
 	 << "     thickness = " << mPipeThickness / um << " um " << G4endl;
-  
+
 
 #if 0
   auto vacuum_s = new G4Tubs("vacuum_s",
@@ -176,9 +178,9 @@ DetectorConstruction::Construct() {
 				     world_lv,
 				     false,
 				     0,
-				     false);  
+				     false);
 #endif
-  
+
   auto pipe_s = new G4Tubs("pipe_s",
 			   mPipeRadius - 0.5 * mPipeThickness,
 			   mPipeRadius + 0.5 * mPipeThickness,
@@ -186,7 +188,7 @@ DetectorConstruction::Construct() {
 			   0., 2. * M_PI);
 
   auto pipe_lv = new G4LogicalVolume(pipe_s, be, "pipe_lv");
-  
+
   auto pipe_pv = new G4PVPlacement(nullptr,
 				   G4ThreeVector(0., 0., 0),
 				   pipe_lv,
@@ -194,7 +196,7 @@ DetectorConstruction::Construct() {
 				   world_lv,
 				   false,
 				   0,
-				   false);  
+				   false);
 
   /** silicon tracker **/
 
@@ -209,10 +211,10 @@ DetectorConstruction::Construct() {
   G4cout << "     thickness = ";
   for (auto layer : mTrackerLayer) G4cout << layer["thickness"] / um << " ";
   G4cout << "um " << G4endl;
-  
+
   int ilayer = 0;
   for (auto layer : mTrackerLayer) {
-    
+
     auto layer_s = new G4Tubs("layer_s",
 			      layer["radius"] - 0.5 * layer["thickness"],
 			      layer["radius"] + 0.5 * layer["thickness"],
@@ -220,7 +222,7 @@ DetectorConstruction::Construct() {
 			      0., 2. * M_PI);
 
     auto layer_lv = new G4LogicalVolume(layer_s, si, "layer_lv");
-    
+
     auto layer_pv = new G4PVPlacement(nullptr,
 				      G4ThreeVector(0., 0., 0),
 				      layer_lv,
@@ -228,7 +230,7 @@ DetectorConstruction::Construct() {
 				      world_lv,
 				      false,
 				      ilayer,
-				      false);  
+				      false);
 
     ++ilayer;
   }
@@ -239,6 +241,9 @@ DetectorConstruction::Construct() {
 
   if (mFCT)
     mFCT->Construct(world_lv);
+
+  if (mABSO)
+    mABSO->Construct(world_lv);
 
   return world_pv;
 }
@@ -257,15 +262,19 @@ DetectorConstruction::ConstructSDandField()
   if (mTOFRICH)
     for (const auto &sd : mTOFRICH->GetSensitiveDetectors())
       SetSensitiveDetector(sd.first, sd.second, false);
-  
+
   if (mFCT)
     for (const auto &sd : mFCT->GetSensitiveDetectors())
       SetSensitiveDetector(sd.first, sd.second, true);
-  
+
+  if (mABSO)
+    for (const auto &sd : mABSO->GetSensitiveDetectors())
+      SetSensitiveDetector(sd.first, sd.second, true);
+
   G4ThreeVector fieldValue = G4ThreeVector();
   auto MagFieldMessenger = new G4GlobalMagFieldMessenger(fieldValue);
   MagFieldMessenger->SetVerboseLevel(1);
-  
+
   // Register the field messenger for deleting
   G4AutoDelete::Register(MagFieldMessenger);
 }

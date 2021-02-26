@@ -16,12 +16,12 @@ namespace G4me {
 G4bool
 SensitiveDetector::ProcessHits(G4Step *aStep, G4TouchableHistory *ROhist)
 {
-  
-  if (aStep->GetTotalEnergyDeposit() == 0.) return true;
+
+  if (aStep->GetTotalEnergyDeposit() == 0. && !mRegisterNoEdep) return true;
   if (!aStep->IsFirstStepInVolume()) return true;
-  
+
   RootIO::Instance()->AddHit(aStep);
-  
+
   return true;
 
   auto track = aStep->GetTrack();
@@ -30,9 +30,9 @@ SensitiveDetector::ProcessHits(G4Step *aStep, G4TouchableHistory *ROhist)
   auto position = track->GetPosition();
   auto angle = momentumDirection.angle(position);
   if (angle > 0.92729522) return true; // asin(0.8)
-  
+
   RootIO::Instance()->AddHit(aStep);
-  
+
   return true;
 }
 
