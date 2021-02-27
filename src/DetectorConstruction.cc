@@ -4,6 +4,7 @@
 #include <fstream>
 
 #include "DetectorConstruction.hh"
+#include "DetectorInfo.hh"
 #include "SensitiveDetector.hh"
 #include "G4SystemOfUnits.hh"
 #include "G4NistManager.hh"
@@ -29,6 +30,7 @@
 #include "TOFRICH/DetectorConstruction.hh"
 #include "FCT/DetectorConstruction.hh"
 #include "ABSO/DetectorConstruction.hh"
+#include "EMCAL/DetectorConstruction.hh"
 
 namespace G4me {
 
@@ -58,7 +60,7 @@ DetectorConstruction::DetectorConstruction()
   mDetectorEnableCmd = new G4UIcmdWithAString("/detector/enable", this);
   mDetectorEnableCmd->SetGuidance("Enable detector module");
   mDetectorEnableCmd->SetParameterName("select", false);
-  mDetectorEnableCmd->SetCandidates("TOFRICH FCT");
+  mDetectorEnableCmd->SetCandidates("TOFRICH FCT ABSO EMCAL");
   mDetectorEnableCmd->AvailableForStates(G4State_PreInit);
 
   /** beam pipe **/
@@ -124,6 +126,7 @@ DetectorConstruction::SetNewValue(G4UIcommand *command, G4String value)
     if (value.compare("TOFRICH") == 0) mTOFRICH = new TOFRICH::DetectorConstruction();
     if (value.compare("FCT") == 0) mFCT = new FCT::DetectorConstruction();
     if (value.compare("ABSO") == 0) mABSO = new ABSO::DetectorConstruction();
+    if (value.compare("EMCAL") == 0) mEMCAL = new EMCAL::DetectorConstruction();
   }
 
   if (command == mPipeRadiusCmd)
@@ -193,7 +196,7 @@ DetectorConstruction::Construct() {
 				     "vacuum_pv",
 				     world_lv,
 				     false,
-				     0,
+				     detID::PIPE,
 				     false);
 #endif
 
@@ -211,7 +214,7 @@ DetectorConstruction::Construct() {
 				   "pipe_pv",
 				   world_lv,
 				   false,
-				   0,
+				   detID::PIPE,
 				   false);
 
   /** silicon tracker **/
@@ -261,6 +264,9 @@ DetectorConstruction::Construct() {
   if (mABSO)
     mABSO->Construct(world_lv);
 
+  if (mEMCAL)
+    mEMCAL->Construct(world_lv);
+
 
   // Now dump a table of copy numbers matched to physical volumes
   std::ofstream pvidMapFile;
@@ -297,6 +303,10 @@ DetectorConstruction::ConstructSDandField()
 
   if (mABSO)
     for (const auto &sd : mABSO->GetSensitiveDetectors())
+      SetSensitiveDetector(sd.first, sd.second, true);
+
+  if (mEMCAL)
+    for (const auto &sd : mEMCAL->GetSensitiveDetectors())
       SetSensitiveDetector(sd.first, sd.second, true);
 
   G4ThreeVector fieldValue = G4ThreeVector();

@@ -32,6 +32,10 @@ namespace ABSO {
   class DetectorConstruction;
 }
 
+namespace EMCAL {
+  class DetectorConstruction;
+}
+
 class DetectorConstruction : public G4VUserDetectorConstruction,
 			     public G4UImessenger
 {
@@ -58,6 +62,7 @@ protected:
   TOFRICH::DetectorConstruction *mTOFRICH;
   FCT::DetectorConstruction *mFCT;
   ABSO::DetectorConstruction *mABSO;
+  EMCAL::DetectorConstruction *mEMCAL;
 
   G4UIdirectory *mPipeDirectory;
   G4UIcmdWithADoubleAndUnit *mPipeRadiusCmd;
