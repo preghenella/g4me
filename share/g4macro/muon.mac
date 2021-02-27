@@ -1,5 +1,7 @@
 /process/optical/verbose 0
 
+/detector/world/dimensions 4. 4. 4. m
+
 ### beam pipe
 /detector/pipe/radius 1.6 cm
 /detector/pipe/length 200. cm
@@ -9,7 +11,7 @@
 /detector/enable EMCAL
 #			   rmin	rmax runit length	length_unit	material
 #
-/detector/ABSO/addCylinder 100.   150.    cm    300.    cm    G4_PbWO4
+/detector/EMCAL/addEMCal 100.   150.    cm    300.    cm    G4_PbWO4
 
 
 ### ABSO

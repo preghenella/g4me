@@ -210,7 +210,7 @@ DetectorConstruction::Construct(G4LogicalVolume *world) {
   }
 
   for(auto& ivol : hasSD) {
-    auto absoSensSD = new SensitiveDetector(std::string("abso_sens_sd_") + std::to_string(ivol));
+    auto absoSensSD = new SensitiveDetector(std::string("abso_sens_sd_") + std::to_string(ivol), true);
     G4SDManager::GetSDMpointer()->AddNewDetector(absoSensSD);
     RegisterSensitiveDetector(std::string("abso_sens_lv_") + std::to_string(ivol), absoSensSD);
   }

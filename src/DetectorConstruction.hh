@@ -76,6 +76,10 @@ protected:
   G4UIcommand *mTrackerAddLayerCmd;
   std::vector<std::map<std::string, double>> mTrackerLayer;
 
+  G4UIdirectory *mWorldDirectory;
+  G4UIcommand *mWorldDimensionsCmd;
+  double mWorldX, mWorldY, mWorldZ;
+
 };
 
 } /** namespace G4me **/

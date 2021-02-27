@@ -53,6 +53,11 @@ DetectorConstruction::DetectorConstruction()
   , mPipeThickness(500 * um)
   , mTrackerDirectory(nullptr)
   , mTrackerAddLayerCmd(nullptr)
+  , mWorldDirectory(nullptr)
+  , mWorldDimensionsCmd(nullptr)
+  , mWorldX(1.5 * m)
+  , mWorldY(1.5 * m)
+  , mWorldZ(3. * m)
 {
 
   mDetectorDirectory = new G4UIdirectory("/detector/");
@@ -62,6 +67,18 @@ DetectorConstruction::DetectorConstruction()
   mDetectorEnableCmd->SetParameterName("select", false);
   mDetectorEnableCmd->SetCandidates("TOFRICH FCT ABSO EMCAL");
   mDetectorEnableCmd->AvailableForStates(G4State_PreInit);
+
+  /** world **/
+
+  mWorldDirectory = new G4UIdirectory("/detector/world/");
+
+  mWorldDimensionsCmd = new G4UIcommand("/detector/world/dimensions", this);
+  mWorldDimensionsCmd->SetGuidance("Configure world box dimensions.");
+  mWorldDimensionsCmd->SetParameter(new G4UIparameter("x", 'd', false));
+  mWorldDimensionsCmd->SetParameter(new G4UIparameter("y", 'd', false));
+  mWorldDimensionsCmd->SetParameter(new G4UIparameter("z", 'd', false));
+  mWorldDimensionsCmd->SetParameter(new G4UIparameter("unit", 's', false));
+  mWorldDimensionsCmd->AvailableForStates(G4State_PreInit);
 
   /** beam pipe **/
 
@@ -129,6 +146,15 @@ DetectorConstruction::SetNewValue(G4UIcommand *command, G4String value)
     if (value.compare("EMCAL") == 0) mEMCAL = new EMCAL::DetectorConstruction();
   }
 
+  if (command == mWorldDimensionsCmd) {
+    G4String x, y, z, unit;
+    std::istringstream iss(value);
+    iss >> x >> y >> z >> unit;
+    mWorldX = command->ConvertToDimensionedDouble(G4String(x + ' ' + unit));
+    mWorldY = command->ConvertToDimensionedDouble(G4String(y + ' ' + unit));
+    mWorldZ = command->ConvertToDimensionedDouble(G4String(z + ' ' + unit));
+  }
+
   if (command == mPipeRadiusCmd)
     mPipeRadius = mPipeRadiusCmd->GetNewDoubleValue(value);
   if (command == mPipeThicknessCmd)
@@ -161,7 +187,7 @@ DetectorConstruction::Construct() {
   auto si = nist->FindOrBuildMaterial("G4_Si");
 
   /** world **/
-  auto world_s  = new G4Box("world_s", 1.5 * m, 1.5 * m, 3.0 * m);
+  auto world_s  = new G4Box("world_s", mWorldX, mWorldY, mWorldZ);
   auto world_lv = new G4LogicalVolume(world_s, air, "world_lv");
   auto world_pv = new G4PVPlacement(0,                // no rotation
 				    G4ThreeVector(),  // at (0,0,0)
@@ -303,11 +329,11 @@ DetectorConstruction::ConstructSDandField()
 
   if (mABSO)
     for (const auto &sd : mABSO->GetSensitiveDetectors())
-      SetSensitiveDetector(sd.first, sd.second, true);
+      SetSensitiveDetector(sd.first, sd.second, false);
 
   if (mEMCAL)
     for (const auto &sd : mEMCAL->GetSensitiveDetectors())
-      SetSensitiveDetector(sd.first, sd.second, true);
+      SetSensitiveDetector(sd.first, sd.second, false);
 
   G4ThreeVector fieldValue = G4ThreeVector();
   auto MagFieldMessenger = new G4GlobalMagFieldMessenger(fieldValue);
