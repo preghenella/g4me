@@ -1,8 +1,8 @@
 /// @author: Benedikt Volkel
 /// @email: benedikt.volkel@cern.ch
 
-#ifndef _ABSO_DetectorConstruction_h_
-#define _ABSO_DetectorConstruction_h_
+#ifndef _EMCAL_DetectorConstruction_h_
+#define _EMCAL_DetectorConstruction_h_
 
 #include "G4UImessenger.hh"
 #include <vector>
@@ -17,7 +17,7 @@ class G4UIcommand;
 class G4UIdirectory;
 
 namespace G4me {
-namespace ABSO {
+namespace EMCAL {
 
 class DetectorConstruction : public G4UImessenger
 {
@@ -39,15 +39,13 @@ protected:
   std::vector<std::pair<std::string, G4VSensitiveDetector *>> mSensitiveDetectors;
 
   G4UIdirectory *mDetectorDirectory;
-  G4UIcommand *mAddAbsoCylinderCmd;
-  G4UIcommand *mAddAbsoBoxCmd;
+  G4UIcommand *mAddEMCalCmd;
 
-  std::vector<geometry::Cylinder> mCylinders;
-  std::vector<geometry::Box> mBoxes;
+  geometry::Cylinder mCylinder;
 
 };
 
-} /** namespace ABSO **/
+} /** namespace EMCAL **/
 } /** namespace G4me **/
 
-#endif /** _ABSO_DetectorConstruction_h_ **/
+#endif /** _EMCAL_DetectorConstruction_h_ **/

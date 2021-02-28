@@ -2,6 +2,7 @@
 /// @email: preghenella@bo.infn.it
 
 #include "FCT/DetectorConstruction.hh"
+#include "DetectorInfo.hh"
 #include "SensitiveDetector.hh"
 #include "G4SystemOfUnits.hh"
 #include "G4NistManager.hh"
@@ -20,7 +21,7 @@
 
 namespace G4me {
 namespace FCT {
-  
+
 /*****************************************************************/
 
 DetectorConstruction::DetectorConstruction()
@@ -90,24 +91,24 @@ DetectorConstruction::SetNewValue(G4UIcommand *command, G4String value)
     mSensor.push_back({ {"x", x}, {"y", y}, {"z", z}, {"rmin", rmin}, {"rmax", rmax}, {"thickness", thickness} });
   }
 }
-  
+
 /*****************************************************************/
 
 void
 DetectorConstruction::Construct(G4LogicalVolume *world_lv) {
-  
+
   G4cout << "--- constructing Forward Photon Spectrometer " << G4endl;
-  
+
   /** materials **/
   G4NistManager *nist = G4NistManager::Instance();
   auto pb = nist->FindOrBuildMaterial("G4_Pb");
   auto si = nist->FindOrBuildMaterial("G4_Si");
-  
+
   /** converter **/
 
   int iconverter = 0;
   for (auto converter : mConverter) {
-    
+
     G4cout << " --- constructing lead converter #" << iconverter << G4endl
 	   << "             x = " << converter["x"]         / cm << " cm " << G4endl
 	   << "             y = " << converter["y"]         / cm << " cm " << G4endl
@@ -121,7 +122,7 @@ DetectorConstruction::Construct(G4LogicalVolume *world_lv) {
 				  0., 2. * M_PI);
 
     auto converter_lv = new G4LogicalVolume(converter_s, pb, std::string("fct_converter_lv_") + std::to_string(iconverter));
-    
+
     auto converter_pv = new G4PVPlacement(nullptr,
 					  G4ThreeVector(converter["x"], converter["y"], converter["z"]),
 					  converter_lv,
@@ -129,16 +130,16 @@ DetectorConstruction::Construct(G4LogicalVolume *world_lv) {
 					  world_lv,
 					  false,
 					  iconverter,
-					  false);  
-    
+					  false);
+
     ++iconverter;
   }
-  
+
   /** sensor **/
 
   int isensor = 0;
   for (auto sensor : mSensor) {
-    
+
     G4cout << " --- constructing silicon sensor #" << isensor << G4endl
 	   << "             x = " << sensor["x"]         / cm << " cm " << G4endl
 	   << "             y = " << sensor["y"]         / cm << " cm " << G4endl
@@ -146,30 +147,30 @@ DetectorConstruction::Construct(G4LogicalVolume *world_lv) {
 	   << "          rmin = " << sensor["rmin"]      / cm << " cm " << G4endl
 	   << "          rmax = " << sensor["rmax"]      / cm << " cm " << G4endl
 	   << "     thickness = " << sensor["thickness"] / cm << " cm " << G4endl;
-    
+
     auto sensor_s = new G4Tubs(std::string("fct_sensor_s_") + std::to_string(isensor),
 			       sensor["rmin"], sensor["rmax"], sensor["thickness"],
 			       0., 2. * M_PI);
 
     //    auto sensor_lv = new G4LogicalVolume(sensor_s, pb, std::string("sensor_lv_") + std::to_string(isensor));
     auto sensor_lv = new G4LogicalVolume(sensor_s, pb, "fct_sensor_lv");
-    
+
     auto sensor_pv = new G4PVPlacement(nullptr,
 				       G4ThreeVector(sensor["x"], sensor["y"], sensor["z"]),
 				       sensor_lv,
 				       std::string("fct_sensor_pv_") + std::to_string(isensor),
 				       world_lv,
 				       false,
-				       100 + isensor,
-				       false);  
-    
+				       detID::FCT + isensor,
+				       false);
+
     ++isensor;
   }
 
   auto sensor_sd = new SensitiveDetector("fct_sensor_sd");
   G4SDManager::GetSDMpointer()->AddNewDetector(sensor_sd);
   RegisterSensitiveDetector("fct_sensor_lv", sensor_sd);
-    
+
 }
 
 /*****************************************************************/

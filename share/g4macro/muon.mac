@@ -1,23 +1,18 @@
 /process/optical/verbose 0
 
+/detector/world/dimensions 4. 4. 4. m
+
 ### beam pipe
 /detector/pipe/radius 1.6 cm
 /detector/pipe/length 200. cm
 /detector/pipe/thickness 500 um
 
-### inner tracker           radius      length          thickness
-/detector/tracker/addLayer  1.8 cm	1.8  cm		50. um
-/detector/tracker/addLayer  2.8 cm	2.8  cm 	50. um
-/detector/tracker/addLayer  3.8 cm	3.8  cm 	50. um
+### EMCAL
+/detector/enable EMCAL
+#			   rmin	rmax runit length	length_unit	material
+#
+/detector/EMCAL/addEMCal 100.   150.    cm    300.    cm    G4_PbWO4
 
-### outer tracker           radius      length          thickness
-/detector/tracker/addLayer   8. cm	8.0  cm		500. um
-/detector/tracker/addLayer  20. cm	20.  cm 	500. um
-/detector/tracker/addLayer  25. cm	25.  cm 	500. um
-/detector/tracker/addLayer  40. cm	40.  cm 	500. um
-/detector/tracker/addLayer  55. cm	55.  cm 	500. um
-/detector/tracker/addLayer  80. cm	80.  cm    	500. um
-/detector/tracker/addLayer 100. cm	100. cm  	500. um
 
 ### ABSO
 /detector/enable ABSO

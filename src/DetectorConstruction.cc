@@ -1,7 +1,10 @@
 /// @author: Roberto Preghenella
 /// @email: preghenella@bo.infn.it
 
+#include <fstream>
+
 #include "DetectorConstruction.hh"
+#include "DetectorInfo.hh"
 #include "SensitiveDetector.hh"
 #include "G4SystemOfUnits.hh"
 #include "G4NistManager.hh"
@@ -9,6 +12,7 @@
 #include "G4Tubs.hh"
 #include "G4LogicalVolume.hh"
 #include "G4LogicalVolumeStore.hh"
+#include "G4PhysicalVolumeStore.hh"
 #include "G4PVPlacement.hh"
 #include "G4GlobalMagFieldMessenger.hh"
 #include "G4AutoDelete.hh"
@@ -26,6 +30,7 @@
 #include "TOFRICH/DetectorConstruction.hh"
 #include "FCT/DetectorConstruction.hh"
 #include "ABSO/DetectorConstruction.hh"
+#include "EMCAL/DetectorConstruction.hh"
 
 namespace G4me {
 
@@ -34,6 +39,9 @@ namespace G4me {
 DetectorConstruction::DetectorConstruction()
   : mDetectorDirectory(nullptr)
   , mDetectorEnableCmd(nullptr)
+  , mGeometryIODirectory(nullptr)
+  , mPVIDMapFileCmd(nullptr)
+  , mPVIDMapFile("PVIDMapFile.dat")
   , mTOFRICH(nullptr)
   , mFCT(nullptr)
   , mPipeDirectory(nullptr)
@@ -45,6 +53,11 @@ DetectorConstruction::DetectorConstruction()
   , mPipeThickness(500 * um)
   , mTrackerDirectory(nullptr)
   , mTrackerAddLayerCmd(nullptr)
+  , mWorldDirectory(nullptr)
+  , mWorldDimensionsCmd(nullptr)
+  , mWorldX(1.5 * m)
+  , mWorldY(1.5 * m)
+  , mWorldZ(3. * m)
 {
 
   mDetectorDirectory = new G4UIdirectory("/detector/");
@@ -52,8 +65,20 @@ DetectorConstruction::DetectorConstruction()
   mDetectorEnableCmd = new G4UIcmdWithAString("/detector/enable", this);
   mDetectorEnableCmd->SetGuidance("Enable detector module");
   mDetectorEnableCmd->SetParameterName("select", false);
-  mDetectorEnableCmd->SetCandidates("TOFRICH FCT");
+  mDetectorEnableCmd->SetCandidates("TOFRICH FCT ABSO EMCAL");
   mDetectorEnableCmd->AvailableForStates(G4State_PreInit);
+
+  /** world **/
+
+  mWorldDirectory = new G4UIdirectory("/detector/world/");
+
+  mWorldDimensionsCmd = new G4UIcommand("/detector/world/dimensions", this);
+  mWorldDimensionsCmd->SetGuidance("Configure world box dimensions.");
+  mWorldDimensionsCmd->SetParameter(new G4UIparameter("x", 'd', false));
+  mWorldDimensionsCmd->SetParameter(new G4UIparameter("y", 'd', false));
+  mWorldDimensionsCmd->SetParameter(new G4UIparameter("z", 'd', false));
+  mWorldDimensionsCmd->SetParameter(new G4UIparameter("unit", 's', false));
+  mWorldDimensionsCmd->AvailableForStates(G4State_PreInit);
 
   /** beam pipe **/
 
@@ -90,6 +115,12 @@ DetectorConstruction::DetectorConstruction()
   mTrackerAddLayerCmd->SetParameter(new G4UIparameter("thickness", 'd', false));
   mTrackerAddLayerCmd->SetParameter(new G4UIparameter("unit", 's', false));
   mTrackerAddLayerCmd->AvailableForStates(G4State_PreInit);
+
+  mGeometryIODirectory = new G4UIdirectory("/detector/geometryio/");
+  mPVIDMapFileCmd = new G4UIcmdWithAString("/detector/geometryio/PVIDMapFile", this);
+  mPVIDMapFileCmd->SetGuidance("Mapping copy number to physical volume file.");
+  mPVIDMapFileCmd->SetParameterName("pvidmap_file", false);
+  mPVIDMapFileCmd->AvailableForStates(G4State_PreInit);
 }
 
 /*****************************************************************/
@@ -104,10 +135,24 @@ void
 DetectorConstruction::SetNewValue(G4UIcommand *command, G4String value)
 {
 
+  if (command == mPVIDMapFileCmd) {
+    mPVIDMapFile = value;
+  }
+
   if (command == mDetectorEnableCmd) {
     if (value.compare("TOFRICH") == 0) mTOFRICH = new TOFRICH::DetectorConstruction();
     if (value.compare("FCT") == 0) mFCT = new FCT::DetectorConstruction();
     if (value.compare("ABSO") == 0) mABSO = new ABSO::DetectorConstruction();
+    if (value.compare("EMCAL") == 0) mEMCAL = new EMCAL::DetectorConstruction();
+  }
+
+  if (command == mWorldDimensionsCmd) {
+    G4String x, y, z, unit;
+    std::istringstream iss(value);
+    iss >> x >> y >> z >> unit;
+    mWorldX = command->ConvertToDimensionedDouble(G4String(x + ' ' + unit));
+    mWorldY = command->ConvertToDimensionedDouble(G4String(y + ' ' + unit));
+    mWorldZ = command->ConvertToDimensionedDouble(G4String(z + ' ' + unit));
   }
 
   if (command == mPipeRadiusCmd)
@@ -142,7 +187,7 @@ DetectorConstruction::Construct() {
   auto si = nist->FindOrBuildMaterial("G4_Si");
 
   /** world **/
-  auto world_s  = new G4Box("world_s", 1.5 * m, 1.5 * m, 3.0 * m);
+  auto world_s  = new G4Box("world_s", mWorldX, mWorldY, mWorldZ);
   auto world_lv = new G4LogicalVolume(world_s, air, "world_lv");
   auto world_pv = new G4PVPlacement(0,                // no rotation
 				    G4ThreeVector(),  // at (0,0,0)
@@ -177,7 +222,7 @@ DetectorConstruction::Construct() {
 				     "vacuum_pv",
 				     world_lv,
 				     false,
-				     0,
+				     detID::PIPE,
 				     false);
 #endif
 
@@ -195,7 +240,7 @@ DetectorConstruction::Construct() {
 				   "pipe_pv",
 				   world_lv,
 				   false,
-				   0,
+				   detID::PIPE,
 				   false);
 
   /** silicon tracker **/
@@ -245,6 +290,21 @@ DetectorConstruction::Construct() {
   if (mABSO)
     mABSO->Construct(world_lv);
 
+  if (mEMCAL)
+    mEMCAL->Construct(world_lv);
+
+
+  // Now dump a table of copy numbers matched to physical volumes
+  std::ofstream pvidMapFile;
+  pvidMapFile.open(mPVIDMapFile.c_str());
+
+  //auto phVolStore = static_cast<std::vector<G4VPhysicalVolume*>>(G4PhysicalVolumeStore::GetInstance());
+  auto& phVolStore = *(G4PhysicalVolumeStore::GetInstance());
+  for(auto phVol : phVolStore) {
+    pvidMapFile << phVol->GetCopyNo() << " " << phVol->GetName() << "\n";
+  }
+  pvidMapFile.close();
+
   return world_pv;
 }
 
@@ -269,7 +329,11 @@ DetectorConstruction::ConstructSDandField()
 
   if (mABSO)
     for (const auto &sd : mABSO->GetSensitiveDetectors())
-      SetSensitiveDetector(sd.first, sd.second, true);
+      SetSensitiveDetector(sd.first, sd.second, false);
+
+  if (mEMCAL)
+    for (const auto &sd : mEMCAL->GetSensitiveDetectors())
+      SetSensitiveDetector(sd.first, sd.second, false);
 
   G4ThreeVector fieldValue = G4ThreeVector();
   auto MagFieldMessenger = new G4GlobalMagFieldMessenger(fieldValue);

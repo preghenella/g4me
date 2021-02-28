@@ -5,6 +5,7 @@ set(SOURCES
   TOFRICH/DetectorConstruction.cc
   FCT/DetectorConstruction.cc
   ABSO/DetectorConstruction.cc
+  EMCAL/DetectorConstruction.cc
   DetectorConstruction.cc
   SensitiveDetector.cc
   PrimaryGeneratorAction.cc
@@ -25,6 +26,9 @@ set(HEADERS
   TOFRICH/DetectorConstruction.hh
   FCT/DetectorConstruction.hh
   ABSO/DetectorConstruction.hh
+  EMCAL/DetectorConstruction.hh
+  DetectorInfo.hh
+  geometry/Common.hh
   DetectorConstruction.hh
   SensitiveDetector.hh
   PrimaryGeneratorAction.hh

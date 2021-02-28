@@ -32,6 +32,10 @@ namespace ABSO {
   class DetectorConstruction;
 }
 
+namespace EMCAL {
+  class DetectorConstruction;
+}
+
 class DetectorConstruction : public G4VUserDetectorConstruction,
 			     public G4UImessenger
 {
@@ -51,9 +55,14 @@ protected:
   G4UIdirectory *mDetectorDirectory;
   G4UIcmdWithAString *mDetectorEnableCmd;
 
+  G4UIdirectory *mGeometryIODirectory;
+  G4UIcmdWithAString *mPVIDMapFileCmd;
+  G4String mPVIDMapFile;
+
   TOFRICH::DetectorConstruction *mTOFRICH;
   FCT::DetectorConstruction *mFCT;
   ABSO::DetectorConstruction *mABSO;
+  EMCAL::DetectorConstruction *mEMCAL;
 
   G4UIdirectory *mPipeDirectory;
   G4UIcmdWithADoubleAndUnit *mPipeRadiusCmd;
@@ -66,6 +75,10 @@ protected:
   G4UIdirectory *mTrackerDirectory;
   G4UIcommand *mTrackerAddLayerCmd;
   std::vector<std::map<std::string, double>> mTrackerLayer;
+
+  G4UIdirectory *mWorldDirectory;
+  G4UIcommand *mWorldDimensionsCmd;
+  double mWorldX, mWorldY, mWorldZ;
 
 };
 
