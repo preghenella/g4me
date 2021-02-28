@@ -14,11 +14,16 @@
 /detector/EMCAL/addEMCal 100.   150.    cm    300.    cm    G4_PbWO4
 
 
+
 ### ABSO
 /detector/enable ABSO
 #			   rmin	rmax runit length	length_unit	material add_sd
 #
+# Sensitive layer to register what reaches right before the absorber
+/detector/ABSO/addCylinder 199.   200.    cm    300.    cm    G4_Galactic   true
+# Actual absorber
 /detector/ABSO/addCylinder 200.   367.    cm    300.    cm    G4_Pb   false
+# Sensitive layer to register what comes out
 /detector/ABSO/addCylinder 367.   368.    cm    300.    cm    G4_Galactic   true
 
 
@@ -33,15 +38,31 @@
 /stacking/transport all
 /tracking/verbose 0
 
-### generator
-/generator/select pythia8
-/pythia8/config pythia8_pp14.cfg
-/pythia8/cuts/eta -2.0 2.0
-/pythia8/init
+#######################
+### generator PYTHIA8 #
+#/generator/select pythia8
+#/pythia8/config pythia8_pp14.cfg
+#/pythia8/cuts/eta -2.0 2.0
+#/pythia8/init
 
 ### io
-/io/prefix pythia8_pp14_5kG.fct
+#/io/prefix pythia8_pp14_5kG.fct
+#/io/saveParticles false
+#######################
+
+#######################
+### generator GUN
+/generator/select gun
+/gun/particle mu-
+/gun/momentumAmp 10 GeV
+/gun/position 0 0 0 cm
+/gun/direction 1 0 0
+/gun/number 10
+
+### io
+/io/prefix gun_5kG.fct
 /io/saveParticles false
+#######################
 
 ### run
 /run/beamOn 10
