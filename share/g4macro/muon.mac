@@ -22,7 +22,7 @@
 # Sensitive layer to register what reaches right before the absorber
 /detector/ABSO/addCylinder 199.   200.    cm    300.    cm    G4_Galactic   true
 # Actual absorber
-/detector/ABSO/addCylinder 200.   367.    cm    300.    cm    G4_Pb   false
+/detector/ABSO/addCylinder 200.   367.    cm    300.    cm    G4_Fe   false
 # Sensitive layer to register what comes out
 /detector/ABSO/addCylinder 367.   368.    cm    300.    cm    G4_Galactic   true
 
