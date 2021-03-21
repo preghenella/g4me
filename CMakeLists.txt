@@ -36,7 +36,7 @@ include_directories(${Pythia_INCLUDE_DIR})
 
 ### find HepMC3 package
 find_package(HepMC3 REQUIRED)
-include_directories(${HepMC3_INCLUDE_DIR})
+include_directories(${HEPMC3_INCLUDE_DIR})
 #include(${HEPMC3_USE_FILE})
 
 #include_directories(${CMAKE_CURRENT_SOURCE_DIR})
