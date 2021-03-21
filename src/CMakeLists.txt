@@ -48,5 +48,5 @@ set(HEADERS
 include_directories(${CMAKE_CURRENT_LIST_DIR})
 
 add_executable(${PROJECT_NAME} main.cc ${SOURCES})
-target_link_libraries(${PROJECT_NAME} ${ROOT_LIBRARIES} ${Geant4_LIBRARIES} ${Pythia_LIBRARIES} ${HepMC3_LIBRARIES})
+target_link_libraries(${PROJECT_NAME} ${ROOT_LIBRARIES} ${Geant4_LIBRARIES} ${Pythia_LIBRARIES} ${HEPMC3_LIBRARIES})
 install(TARGETS ${PROJECT_NAME} RUNTIME DESTINATION bin)
